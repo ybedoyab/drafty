@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+python-multipart
+torch>=2.0.0
+transformers>=4.40.0
+accelerate
+pillow
+crewai
+einops
+sentencepiece
+ezdxf 
+# cadquery  # optional, heavy; remove if install fails 
