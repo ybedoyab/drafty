@@ -1,0 +1,28 @@
+# Drafty - AI-Powered CAD Generation System
+# Main project requirements
+
+# Core dependencies
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+python-dotenv>=1.0.0
+
+# AI and ML dependencies
+crewai[tools]>=0.134.0
+langchain-openai>=0.0.5
+transformers>=4.35.0
+torch>=2.1.0
+Pillow>=10.0.0
+
+# File handling and utilities
+aiofiles>=23.2.0
+pathlib2>=2.3.7
+
+# Development dependencies (optional)
+pytest>=7.4.0
+black>=23.0.0
+flake8>=6.0.0
+
+# Note: The AI system (draftycrew) has its own pyproject.toml
+# with specific CrewAI dependencies. This requirements.txt is for
+# the main project backend and utilities. 
