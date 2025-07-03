@@ -63,6 +63,26 @@ Drafty utiliza un pipeline de **agentes inteligentes** (CrewAI) que colaboran pa
 
 ## 🚦 Instalación y uso
 
+## 🗂️ Archivos .env requeridos
+
+### Backend (`drafty/ai/draftycrew/.env`)
+
+Crea un archivo `.env` en la carpeta `ai/draftycrew` con:
+```env
+OPENAI_API_KEY=tu_clave_de_openai
+```
+- **OPENAI_API_KEY**: Tu clave de API de OpenAI (necesaria para que los agentes funcionen).
+
+### Frontend (`drafty/frontend/.env`)
+
+Crea un archivo `.env` en la carpeta `frontend` con:
+```env
+VITE_API_URL=http://localhost:8000
+```
+- **VITE_API_URL**: URL del backend (ajusta si lo corres en otro puerto o dominio).
+
+---
+
 ### Backend (FastAPI)
 
 1. Ve a la carpeta del backend:
