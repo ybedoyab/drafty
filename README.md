@@ -1,32 +1,67 @@
-# Drafty - Generador AI de Código OpenSCAD
+# Drafty - Generador AI de Código OpenSCAD 🚀
 ![Logo](https://github.com/user-attachments/assets/b4f00813-73d9-4598-b179-bc2755206a76)
 
 Proyecto para el DeepPunkAI Hackathon
 
-## Descripción
+---
 
-Drafty es un sistema inteligente que genera código OpenSCAD a partir de imágenes usando agentes de IA. El sistema cuenta con:
+## 🛠️ Problema que resuelve Drafty
 
-- **Backend FastAPI**: Recibe imágenes, ejecuta el pipeline de IA y retorna el código OpenSCAD generado.
-- **Frontend React**: Permite subir imágenes, ver y descargar el código OpenSCAD generado.
+En ingeniería, diseño y fabricación, transformar una idea o un boceto en un modelo CAD funcional es un proceso lento y requiere experiencia técnica. Muchos usuarios no dominan OpenSCAD ni tienen habilidades avanzadas de modelado 3D, lo que limita la adopción de la fabricación digital y la personalización de piezas.
 
-## ¿Qué hace Drafty?
-
-- Analiza imágenes de objetos 3D (por ejemplo, piezas, rampas, muebles, etc).
-- Genera automáticamente el código OpenSCAD correspondiente.
-- Permite copiar o descargar el código generado.
-- **No incluye visualización 3D integrada** (por compatibilidad y robustez).
-
-## ¿Cómo visualizar el código OpenSCAD?
-
-Puedes copiar el código generado y visualizarlo en línea en:
-👉 [https://ochafik.com/openscad2](https://ochafik.com/openscad2)
-
-O abrirlo en el programa de escritorio [OpenSCAD](https://openscad.org/).
+**Drafty** automatiza la generación de código OpenSCAD a partir de imágenes, permitiendo que cualquier persona pueda obtener modelos paramétricos listos para impresión 3D o fabricación, sin conocimientos avanzados de CAD.
 
 ---
 
-## Instalación y uso
+## 🤖 ¿Cómo lo resuelve Drafty? (Explicación técnica)
+
+Drafty utiliza un pipeline de **agentes inteligentes** (CrewAI) que colaboran para analizar imágenes y generar código OpenSCAD funcional:
+
+1. **Agente Visualizador (Analyzer):**
+   - 🖼️ Analiza la imagen subida por el usuario.
+   - 📏 Extrae dimensiones, formas y relaciones geométricas usando visión por computadora y LLM.
+   - 📝 Genera una descripción técnica precisa y estructurada del objeto.
+
+2. **Agente Generador CAD:**
+   - 🤝 Recibe la descripción técnica.
+   - 📚 Consulta una base de conocimiento de mejores prácticas y patrones OpenSCAD.
+   - 💻 Genera el código OpenSCAD paramétrico y lo valida automáticamente.
+
+**Resultado:** El usuario recibe un script OpenSCAD limpio, paramétrico y funcional, listo para ser visualizado o modificado.
+
+---
+
+## 🧩 Stack tecnológico
+
+- **Frontend:**
+  - ⚛️ React + Vite
+  - 🎨 TailwindCSS (UI moderna y responsiva)
+  - 🔗 React Router DOM
+- **Backend:**
+  - 🐍 FastAPI (Python)
+  - ⚙️ Orquestador de pipeline de IA
+- **AI/Agentes:**
+  - 🧠 CrewAI (orquestación multi-agente)
+  - 🤖 OpenAI GPT-4o (análisis y generación de código)
+  - 🛠️ Herramientas personalizadas: VisionTool, OpenSCAD Knowledge Tool, OpenSCAD Validator
+- **Otros:**
+  - 🟩 OpenSCAD (sintaxis y validación)
+  - 👀 Visualización recomendada: [ochafik.com/openscad2](https://ochafik.com/openscad2)
+
+---
+
+## 🧠 ¿Cómo se usan los agentes?
+
+1. El usuario sube una imagen y (opcionalmente) una descripción.
+2. El backend ejecuta el pipeline de CrewAI:
+   - El **Agente Visualizador** analiza la imagen y produce una especificación técnica.
+   - El **Agente CAD** toma esa especificación, consulta la base de conocimiento y genera el código OpenSCAD.
+   - El código es validado y corregido automáticamente.
+3. El frontend muestra el código generado, listo para copiar, descargar o visualizar en [ochafik.com/openscad2](https://ochafik.com/openscad2).
+
+---
+
+## 🚦 Instalación y uso
 
 ### Backend (FastAPI)
 
@@ -68,7 +103,7 @@ O abrirlo en el programa de escritorio [OpenSCAD](https://openscad.org/).
 
 ---
 
-## Notas importantes
+## ℹ️ Notas importantes
 
 - El código generado es **OpenSCAD puro**. No se visualiza en 3D dentro de la app, pero puedes verlo fácilmente en [https://ochafik.com/openscad2](https://ochafik.com/openscad2) o en el programa OpenSCAD.
 - El frontend ha sido optimizado para una experiencia moderna, clara y profesional.
@@ -76,7 +111,13 @@ O abrirlo en el programa de escritorio [OpenSCAD](https://openscad.org/).
 
 ---
 
-## Créditos
+## 👨‍💻 Créditos
 - Proyecto desarrollado para el DeepPunkAI Hackathon.
 - Repositorio: [https://github.com/ybedoyab/drafty](https://github.com/ybedoyab/drafty)
 - Visualizador online recomendado: [https://ochafik.com/openscad2](https://ochafik.com/openscad2)
+
+---
+
+### ✍️ Autores
+- **Yulian Bedoya** (estudiante de Ingeniería Mecánica)
+- **Alejandro Guaranguay** (estudiante de Especialización en Inteligencia Artificial)
