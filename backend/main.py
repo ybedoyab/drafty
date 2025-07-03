@@ -35,7 +35,7 @@ async def generate_drawing(
     file: UploadFile = File(...),
     description: str = Form(None)
 ):
-    """Receive an image file and optional description, run AI pipeline, return DXF file path and CAD script."""
+    """Receive an image file and optional description, run AI pipeline, return CAD script."""
     if file.content_type.split("/")[0] != "image":
         raise HTTPException(status_code=400, detail="File must be an image")
 
@@ -47,12 +47,10 @@ async def generate_drawing(
     # Run the AI pipeline with optional description
     try:
         result = run_pipeline(str(image_path), description)
-        dxf_path = result["dxf_file"]
         cad_script = result.get("cad_script", "")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
     return {
-        "dxf_file": dxf_path,
         "cad_script": cad_script
     } 

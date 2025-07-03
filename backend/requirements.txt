@@ -9,4 +9,5 @@ crewai
 einops
 sentencepiece
 ezdxf 
+python-multipart
 # cadquery  # optional, heavy; remove if install fails 

@@ -73,9 +73,17 @@ class Draftycrew():
 
     @task
     def generate_cad(self) -> Task:
+        def output_file_from_inputs(inputs):
+            return inputs.get('cad_script_path', 'generated_cad_script.scad')
         return Task(
             config=self.tasks_config['generate_cad'], # type: ignore[index]
-            output_file='generated_cad_script.scad'
+            output_file=output_file_from_inputs
+        )
+
+    def generate_cad_task(self, output_file: str) -> Task:
+        return Task(
+            config=self.tasks_config['generate_cad'], # type: ignore[index]
+            output_file=output_file
         )
 
     @crew
