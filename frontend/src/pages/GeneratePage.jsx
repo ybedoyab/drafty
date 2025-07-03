@@ -2,17 +2,14 @@ import { useState } from 'react';
 import axios from 'axios';
 import FileUpload from '../components/FileUpload';
 import LoadingSpinner from '../components/LoadingSpinner';
-import ResultCard from '../components/ResultCard';
 import ErrorAlert from '../components/ErrorAlert';
 import ProcessSteps from '../components/ProcessSteps';
-import CADViewer from '../components/CADViewer';
 import CADScriptViewer from '../components/CADScriptViewer';
 
 export default function GeneratePage() {
   const [file, setFile] = useState(null);
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
-  const [dxfPath, setDxfPath] = useState('');
   const [cadScript, setCadScript] = useState('');
   const [error, setError] = useState('');
   const [currentStep, setCurrentStep] = useState(0);
@@ -44,7 +41,6 @@ export default function GeneratePage() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       
-      setDxfPath(data.dxf_file);
       setCadScript(data.cad_script || '');
       setCompletedSteps([1, 2, 3, 4]);
     } catch (err) {
@@ -59,9 +55,9 @@ export default function GeneratePage() {
     <div className="min-h-screen bg-slate-100 py-12 px-4">
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold mb-2">Generar Plano</h2>
+          <h2 className="text-3xl font-bold mb-2">Generar CAD</h2>
           <p className="text-gray-600">
-            Sube una imagen de un objeto 3D y obtén su plano de ingeniería
+            Sube una imagen de un objeto 3D y obtén su código OpenSCAD
           </p>
         </div>
 
@@ -84,7 +80,7 @@ export default function GeneratePage() {
                 className="w-full flex justify-center items-center gap-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {loading && <LoadingSpinner />}
-                {loading ? 'Procesando imagen...' : 'Generar plano'}
+                {loading ? 'Procesando imagen...' : 'Generar CAD'}
               </button>
             </form>
 
@@ -99,12 +95,6 @@ export default function GeneratePage() {
             {cadScript && (
               <CADScriptViewer cadScript={cadScript} />
             )}
-            
-            {cadScript && (
-              <CADViewer cadScript={cadScript} />
-            )}
-
-            <ResultCard dxfPath={dxfPath} />
           </div>
         </div>
       </div>

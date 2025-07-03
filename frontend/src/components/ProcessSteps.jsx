@@ -1,10 +1,10 @@
-import { FaImage, FaEye, FaCog, FaFileAlt } from 'react-icons/fa';
+import { FaImage, FaEye, FaCog, FaCode } from 'react-icons/fa';
 
 const steps = [
   { id: 1, name: 'Subir imagen', icon: FaImage, description: 'Imagen 3D cargada' },
-  { id: 2, name: 'Describir imagen', icon: FaEye, description: 'Análisis automático' },
-  { id: 3, name: 'Crear CAD', icon: FaCog, description: 'Generación de modelo' },
-  { id: 4, name: 'Crear plano', icon: FaFileAlt, description: 'Plano DXF generado' }
+  { id: 2, name: 'Analizar imagen', icon: FaEye, description: 'Análisis automático' },
+  { id: 3, name: 'Generar CAD', icon: FaCog, description: 'Generación de modelo' },
+  { id: 4, name: 'Código OpenSCAD', icon: FaCode, description: 'Script CAD generado' }
 ];
 
 export default function ProcessSteps({ currentStep = 0, completedSteps = [] }) {

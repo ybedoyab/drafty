@@ -1,17 +1,33 @@
-import { FaCode, FaCopy } from 'react-icons/fa';
+import { FaCode, FaCopy, FaDownload } from 'react-icons/fa';
 import { useState } from 'react';
+
+function cleanCadScript(cadScript) {
+  // Remove leading/trailing triple backticks and optional language
+  return cadScript
+    .replace(/^```[a-zA-Z]*\s*/, '')
+    .replace(/```\s*$/, '')
+    .trim();
+}
 
 export default function CADScriptViewer({ cadScript, className = "" }) {
   const [copied, setCopied] = useState(false);
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(cadScript);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
+  const handleCopy = () => {
+    navigator.clipboard.writeText(cleanCadScript(cadScript));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
+  const downloadScript = () => {
+    const blob = new Blob([cleanCadScript(cadScript)], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'generated_cad_script.scad';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   if (!cadScript) {
@@ -27,19 +43,28 @@ export default function CADScriptViewer({ cadScript, className = "" }) {
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center space-x-2">
           <FaCode className="text-indigo-600" />
-          <h3 className="text-lg font-medium text-gray-900">Script CAD Generado</h3>
+          <h3 className="text-lg font-medium text-gray-900">Código OpenSCAD Generado</h3>
         </div>
-        <button
-          onClick={copyToClipboard}
-          className="flex items-center space-x-2 px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-        >
-          <FaCopy size={14} />
-          <span>{copied ? 'Copiado!' : 'Copiar'}</span>
-        </button>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={downloadScript}
+            className="flex items-center space-x-2 px-3 py-1 text-sm bg-green-600 text-white hover:bg-green-700 rounded-md transition-colors"
+          >
+            <FaDownload size={14} />
+            <span>Descargar</span>
+          </button>
+          <button
+            onClick={handleCopy}
+            className="flex items-center space-x-2 px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+          >
+            <FaCopy size={14} />
+            <span>{copied ? '¡Copiado!' : 'Copiar'}</span>
+          </button>
+        </div>
       </div>
       <div className="p-4">
-        <pre className="bg-gray-50 rounded-lg p-4 text-sm text-gray-800 overflow-x-auto whitespace-pre-wrap">
-          {cadScript}
+        <pre className="bg-gray-50 rounded-lg p-4 text-sm text-gray-800 overflow-x-auto whitespace-pre-wrap max-h-96 overflow-y-auto">
+          {cleanCadScript(cadScript)}
         </pre>
       </div>
     </div>
