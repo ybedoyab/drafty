@@ -1,4 +1,5 @@
 # Drafty - Generador AI de Código OpenSCAD
+![Logo](https://github.com/user-attachments/assets/b4f00813-73d9-4598-b179-bc2755206a76)
 
 Proyecto para el DeepPunkAI Hackathon
 
