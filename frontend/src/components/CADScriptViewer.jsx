@@ -3,10 +3,16 @@ import { useState } from 'react';
 
 function cleanCadScript(cadScript) {
   // Remove leading/trailing triple backticks and optional language
-  return cadScript
+  let code = cadScript
     .replace(/^```[a-zA-Z]*\s*/, '')
     .replace(/```\s*$/, '')
     .trim();
+  // If there is a second block of triple backticks, cut everything after the first
+  const secondBacktick = code.indexOf('```');
+  if (secondBacktick !== -1) {
+    code = code.substring(0, secondBacktick).trim();
+  }
+  return code;
 }
 
 export default function CADScriptViewer({ cadScript, className = "" }) {
