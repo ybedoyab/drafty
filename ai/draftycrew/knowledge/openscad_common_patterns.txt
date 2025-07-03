@@ -1,0 +1,176 @@
+OPENSCAD COMMON PATTERNS AND TEMPLATES
+=======================================
+
+1. BASIC CHAIR TEMPLATE:
+   // Chair parameters
+   chair_width = 400;
+   chair_depth = 400;
+   chair_height = 850;
+   seat_height = 450;
+   leg_diameter = 30;
+   
+   // Seat
+   translate([0, 0, seat_height])
+   cube([chair_width, chair_depth, 50]);
+   
+   // Backrest
+   translate([chair_width - 50, 0, seat_height + 50])
+   rotate([15, 0, 0])
+   cube([50, chair_depth, chair_height - seat_height - 50]);
+   
+   // Legs
+   for (x = [0, chair_width - leg_diameter]) {
+       for (y = [0, chair_depth - leg_diameter]) {
+           translate([x, y, 0])
+           cylinder(h=seat_height, d=leg_diameter, $fn=32);
+       }
+   }
+
+2. TABLE TEMPLATE:
+   // Table parameters
+   table_width = 800;
+   table_depth = 600;
+   table_height = 750;
+   table_top_thickness = 30;
+   leg_diameter = 40;
+   
+   // Table top
+   translate([0, 0, table_height - table_top_thickness])
+   cube([table_width, table_depth, table_top_thickness]);
+   
+   // Table legs
+   for (x = [leg_diameter/2, table_width - leg_diameter/2]) {
+       for (y = [leg_diameter/2, table_depth - leg_diameter/2]) {
+           translate([x, y, 0])
+           cylinder(h=table_height - table_top_thickness, d=leg_diameter, $fn=32);
+       }
+   }
+
+3. ROUNDED BOX PATTERN:
+   // Rounded box with fillets
+   module rounded_box(width, height, depth, radius) {
+       hull() {
+           translate([radius, radius, radius])
+           sphere(r=radius, $fn=32);
+           translate([width - radius, radius, radius])
+           sphere(r=radius, $fn=32);
+           translate([radius, height - radius, radius])
+           sphere(r=radius, $fn=32);
+           translate([width - radius, height - radius, radius])
+           sphere(r=radius, $fn=32);
+           translate([radius, radius, depth - radius])
+           sphere(r=radius, $fn=32);
+           translate([width - radius, radius, depth - radius])
+           sphere(r=radius, $fn=32);
+           translate([radius, height - radius, depth - radius])
+           sphere(r=radius, $fn=32);
+           translate([width - radius, height - radius, depth - radius])
+           sphere(r=radius, $fn=32);
+       }
+   }
+
+4. HOLE PATTERN:
+   // Array of holes
+   module hole_pattern(rows, cols, spacing, hole_diameter) {
+       for (row = [0 : rows - 1]) {
+           for (col = [0 : cols - 1]) {
+               translate([col * spacing, row * spacing, 0])
+               cylinder(h=100, d=hole_diameter, $fn=32);
+           }
+       }
+   }
+
+5. CHAISE LOUNGE PATTERN:
+   // Chaise lounge with proper proportions
+   chaise_length = 1800;
+   chaise_width = 800;
+   chaise_height = 450;
+   leg_height = 200;
+   
+   // Main body - seat section
+   translate([0, 0, leg_height])
+   cube([chaise_length * 0.6, chaise_width, 50]);
+   
+   // Backrest section
+   translate([chaise_length * 0.5, 0, leg_height + 50])
+   rotate([15, 0, 0])
+   cube([chaise_length * 0.5, chaise_width, 100]);
+   
+   // Footrest extension
+   translate([chaise_length * 0.6, 0, leg_height])
+   cube([chaise_length * 0.4, chaise_width, 30]);
+   
+   // Legs
+   for (x = [0, chaise_length - 50]) {
+       for (y = [0, chaise_width - 50]) {
+           translate([x, y, 0])
+           cylinder(h=leg_height, d=50, $fn=32);
+       }
+   }
+
+6. VALIDATION PATTERNS:
+   // Check if dimensions are valid
+   module validate_dimensions(width, height, depth) {
+       assert(width > 0, "Width must be positive");
+       assert(height > 0, "Height must be positive");
+       assert(depth > 0, "Depth must be positive");
+   }
+   
+   // Check if radius is valid
+   module validate_radius(radius) {
+       assert(radius > 0, "Radius must be positive");
+   }
+
+7. COMMON TRANSFORMATIONS:
+   // Center an object
+   module center_object(width, height, depth) {
+       translate([-width/2, -height/2, -depth/2])
+       children();
+   }
+   
+   // Mirror around center
+   module mirror_center() {
+       union() {
+           children();
+           mirror([1, 0, 0])
+           children();
+       }
+   }
+
+8. TEXTURE PATTERNS:
+   // Surface texture with small spheres
+   module add_texture(density) {
+       for (i = [0 : density : 100]) {
+           for (j = [0 : density : 100]) {
+               translate([i, j, 0])
+               sphere(r=1, $fn=16);
+           }
+       }
+   }
+
+9. ASSEMBLY PATTERNS:
+   // Main assembly module
+   module main_object() {
+       union() {
+           // Add all components here
+           component_1();
+           component_2();
+           component_3();
+       }
+   }
+   
+   // Render the object
+   main_object();
+
+10. ERROR CORRECTION PATTERNS:
+    // Replace 2D circle in 3D context
+    // WRONG: circle(r=10); in 3D context
+    // CORRECT: cylinder(h=height, r=10, $fn=32);
+    
+    // Replace invalid hull usage
+    // WRONG: hull() { circle(r=10); }
+    // CORRECT: hull() { cylinder(h=height, r=10, $fn=32); }
+    
+    // Fix missing semicolons
+    // WRONG: cube([10, 10, 10])
+    // CORRECT: cube([10, 10, 10]); 

@@ -1,0 +1,77 @@
+OPENSCAD BEST PRACTICES AND SYNTAX RULES
+==========================================
+
+1. BASIC SYNTAX RULES:
+   - All statements must end with semicolon (;)
+   - Use proper indentation for readability
+   - Variables must be declared before use
+   - Module names should be descriptive and use snake_case
+   - Comments start with // for single line or /* */ for multi-line
+
+2. GEOMETRIC PRIMITIVES:
+   - cube([x, y, z]) - creates a rectangular box
+   - cylinder(h=height, r=radius, d=diameter) - creates a cylinder
+   - sphere(r=radius, d=diameter) - creates a sphere
+   - cone(h=height, r1=bottom_radius, r2=top_radius) - creates a cone
+
+3. TRANSFORMATIONS:
+   - translate([x, y, z]) - moves object in 3D space
+   - rotate([x_angle, y_angle, z_angle]) - rotates around axes
+   - scale([x_factor, y_factor, z_factor]) - scales object
+   - mirror([x, y, z]) - mirrors object across plane
+
+4. BOOLEAN OPERATIONS:
+   - union() - combines multiple objects
+   - difference() - subtracts second object from first
+   - intersection() - keeps only overlapping parts
+   - hull() - creates convex hull of child objects
+
+5. 2D TO 3D CONVERSION:
+   - linear_extrude(height, center, convexity, twist, slices) - extrudes 2D shape
+   - rotate_extrude(angle, convexity) - rotates 2D shape around Z-axis
+   - IMPORTANT: 2D shapes (circle, square, polygon) must be extruded to become 3D
+
+6. COMMON MISTAKES TO AVOID:
+   - Using 2D primitives in 3D context without extrusion
+   - Missing semicolons at end of statements
+   - Incorrect parameter names (use h for height, r for radius, d for diameter)
+   - Using hull() with 2D objects
+   - Unmatched parentheses or braces
+
+7. PARAMETRIC DESIGN:
+   - Use variables for dimensions: length = 100;
+   - Make models easily modifiable
+   - Use mathematical expressions: width = length * 0.5;
+   - Group related parameters together
+
+8. MODULE STRUCTURE:
+   - Start with parameter definitions
+   - Use descriptive module names
+   - Include comments explaining complex operations
+   - End with the main object or union of objects
+
+9. VALIDATION RULES:
+   - All dimensions must be positive numbers
+   - Radius and diameter cannot be zero
+   - Height values must be positive
+   - $fn parameter controls resolution (higher = smoother circles)
+
+10. FURNITURE-SPECIFIC GUIDELINES:
+    - Use realistic dimensions (mm or cm, not meters)
+    - Typical chair dimensions: 400-500mm width, 400-500mm depth, 800-900mm height
+    - Leg diameters: 20-50mm for stability
+    - Seat height: 400-500mm from ground
+    - Backrest angle: 5-15 degrees from vertical
+
+11. ERROR PREVENTION:
+    - Always test boolean operations for validity
+    - Check that transformations don't create degenerate geometry
+    - Verify that all faces in polyhedron are properly oriented
+    - Use $fn=32 or higher for smooth circular objects
+
+12. OUTPUT REQUIREMENTS:
+    - Code must compile without errors in OpenSCAD
+    - No markdown formatting in output
+    - Pure OpenSCAD syntax only
+    - Include clear comments for major operations
+    - Use parametric variables for easy modification 
