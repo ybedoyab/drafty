@@ -3,9 +3,8 @@ from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
 from dotenv import load_dotenv
-from crewai_tools import VisionTool
 from langchain_openai import ChatOpenAI
-from draftycrew.tools import OpenSCADValidator, OpenSCADKnowledgeTool
+from draftycrew.tools import OpenSCADValidator, OpenSCADKnowledgeTool, VisionTool
 import os
 
 # If you want to run a snippet of code before or after the crew starts,
