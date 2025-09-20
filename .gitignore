@@ -141,3 +141,6 @@ uploads/
 # AI model cache
 .cache/
 transformers_cache/
+
+# Huawei Cloud deployment documentation (contains sensitive information)
+README-HUAWEI-CLOUD.md

@@ -10,4 +10,11 @@ einops
 sentencepiece
 ezdxf 
 python-multipart
+# Database dependencies
+pymongo>=4.0.0
+mysql-connector-python>=8.0.0
+# Storage dependencies
+boto3>=1.26.0
+# Environment management
+python-dotenv>=1.0.0
 # cadquery  # optional, heavy; remove if install fails 

@@ -1,7 +1,7 @@
 # Drafty - Generador AI de Código OpenSCAD 🚀
 ![Logo](https://github.com/user-attachments/assets/b4f00813-73d9-4598-b179-bc2755206a76)
 
-Proyecto para el DeepPunkAI Hackathon
+Proyecto para Huawei Developer Competition 2025
 
 ---
 
@@ -61,65 +61,101 @@ Drafty utiliza un pipeline de **agentes inteligentes** (CrewAI) que colaboran pa
 
 ---
 
-## 🚦 Instalación y uso
+## 🚀 Instalación y uso
 
-## 🗂️ Archivos .env requeridos
+### 🐳 Opción 1: Docker (Recomendado)
 
-### Backend (`drafty/ai/draftycrew/.env`)
+1. **Clona el repositorio:**
+   ```bash
+   git clone https://github.com/ybedoyab/drafty.git
+   cd drafty
+   ```
 
-Crea un archivo `.env` en la carpeta `ai/draftycrew` con:
+2. **Configura las variables de entorno:**
+   ```bash
+   cp env.example .env
+   # Edita .env con tus credenciales de OpenAI
+   ```
+
+3. **Ejecuta con Docker Compose:**
+   ```bash
+   docker-compose up --build
+   ```
+
+4. **Accede a la aplicación:**
+   - Frontend: [http://localhost:80](http://localhost:80)
+   - Backend API: [http://localhost:8000](http://localhost:8000)
+
+### 🛠️ Opción 2: Instalación manual
+
+#### Configuración de variables de entorno
+
+Crea un archivo `.env` en la raíz del proyecto con:
 ```env
-OPENAI_API_KEY=tu_clave_de_openai
+# AI Configuration
+AI_MODEL=gpt-4o
+AI_OPENAI_API_KEY=tu_clave_de_openai_aqui
+AI_HF_TOKEN=tu_token_de_huggingface_aqui
+
+# Frontend Configuration
+FRONTEND_API_URL=http://localhost:8000
 ```
-- **OPENAI_API_KEY**: Tu clave de API de OpenAI (necesaria para que los agentes funcionen).
 
-### Frontend (`drafty/frontend/.env`)
-
-Crea un archivo `.env` en la carpeta `frontend` con:
-```env
-VITE_API_URL=http://localhost:8000
-```
-- **VITE_API_URL**: URL del backend (ajusta si lo corres en otro puerto o dominio).
-
----
-
-### Backend (FastAPI)
+#### Backend (FastAPI)
 
 1. Ve a la carpeta del backend:
    ```bash
-   cd drafty/backend
+   cd backend
    ```
+
 2. Crea y activa un entorno virtual:
    ```bash
    python -m venv .venv
    .venv\Scripts\activate  # En Windows
+   source .venv/bin/activate  # En Linux/Mac
    ```
+
 3. Instala dependencias:
    ```bash
    pip install -r requirements.txt
    ```
+
 4. Ejecuta el backend:
    ```bash
    python run.py
-   # o
-   uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
    ```
 
-### Frontend (React)
+#### Frontend (React)
 
 1. Ve a la carpeta del frontend:
    ```bash
-   cd drafty/frontend
+   cd frontend
    ```
+
 2. Instala dependencias:
    ```bash
    npm install
    ```
+
 3. Ejecuta el servidor de desarrollo:
    ```bash
    npm run dev
    ```
+
 4. Abre [http://localhost:5173](http://localhost:5173) en tu navegador.
+
+---
+
+## ☁️ Despliegue en la nube
+
+Drafty está optimizado para despliegue en **Huawei Cloud** con soporte completo para:
+
+- **ECS (Elastic Cloud Server)**: Hosting de la aplicación
+- **DDS (Document Database Service)**: Base de datos MongoDB
+- **OBS (Object Storage Service)**: Almacenamiento de archivos
+- **EIP (Elastic IP)**: Acceso público seguro
+
+Para instrucciones detalladas de despliegue, consulta la documentación de configuración (disponible localmente).
 
 ---
 
@@ -132,7 +168,7 @@ VITE_API_URL=http://localhost:8000
 ---
 
 ## 👨‍💻 Créditos
-- Proyecto desarrollado para el DeepPunkAI Hackathon.
+- Proyecto desarrollado para Huawei Developer Competition 2025
 - Repositorio: [https://github.com/ybedoyab/drafty](https://github.com/ybedoyab/drafty)
 - Visualizador online recomendado: [https://ochafik.com/openscad2](https://ochafik.com/openscad2)
 
@@ -140,4 +176,4 @@ VITE_API_URL=http://localhost:8000
 
 ### ✍️ Autores
 - **Yulian Bedoya** (estudiante de Ingeniería Mecánica)
-- **Alejandro Guaranguay** (estudiante de Especialización en Inteligencia Artificial)
+- **Marycielo Berrio Zapata** (estudiante de Ingeniería en Sistemas)

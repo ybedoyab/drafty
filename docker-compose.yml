@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: drafty-backend
+    ports:
+      - "8000:8000"
+    environment:
+      # Python configuration
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      
+      # Database configuration (Huawei Cloud DDS)
+      - DATABASE_TYPE=${DATABASE_TYPE:-mongodb}
+      - DATABASE_URI=${DATABASE_URI}
+      - DATABASE_NAME=${DATABASE_NAME}
+      
+      # Storage configuration (Huawei Cloud OBS)
+      - STORAGE_TYPE=${STORAGE_TYPE:-huawei_obs}
+      - STORAGE_OBS_ENDPOINT=${STORAGE_OBS_ENDPOINT}
+      - STORAGE_OBS_BUCKET_NAME=${STORAGE_OBS_BUCKET_NAME}
+      - STORAGE_OBS_ACCESS_KEY=${STORAGE_OBS_ACCESS_KEY}
+      - STORAGE_OBS_SECRET_KEY=${STORAGE_OBS_SECRET_KEY}
+      - STORAGE_OBS_REGION=${STORAGE_OBS_REGION}
+      
+      # AI configuration (passed to local AI module)
+      - AI_MODEL=${AI_MODEL}
+      - AI_OPENAI_API_KEY=${AI_OPENAI_API_KEY}
+      - AI_HF_TOKEN=${AI_HF_TOKEN}
+      
+      # Application configuration (from main .env)
+      - BACKEND_ENVIRONMENT=${BACKEND_ENVIRONMENT}
+      - BACKEND_DEBUG=${BACKEND_DEBUG}
+      - BACKEND_LOG_LEVEL=${BACKEND_LOG_LEVEL}
+      - BACKEND_SECRET_KEY=${BACKEND_SECRET_KEY}
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./ai:/app/ai  # AI module runs locally
+    restart: unless-stopped
+    networks:
+      - drafty-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Frontend configuration (from main .env)
+        - VITE_API_URL=${FRONTEND_API_URL}
+        - VITE_ENVIRONMENT=${FRONTEND_ENVIRONMENT}
+        - VITE_DEBUG=${FRONTEND_DEBUG}
+    container_name: drafty-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - drafty-network
+
+networks:
+  drafty-network:
+    driver: bridge
+

@@ -24,7 +24,7 @@ openscad_knowledge = OpenSCADKnowledgeTool()
 
 # Initialize LLMs
 gpt4o_llm = ChatOpenAI(
-    model="gpt-4o",
+    model=os.getenv("MODEL", "gpt-4o"),
     temperature=0.1,
     api_key=os.getenv("OPENAI_API_KEY")
 )
