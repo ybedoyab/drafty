@@ -17,6 +17,9 @@ sys.path.append(str(Path(__file__).parent.parent))
 from ai.orchestrator import run_pipeline
 from database import db
 from storage import storage
+import subprocess
+import tempfile
+import json
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -68,7 +71,7 @@ async def generate_drawing(
     file: UploadFile = File(...),
     description: str = Form(None)
 ):
-    """Receive image and optional description, run AI pipeline, return CAD script."""
+    """Receive image and optional description, run AI pipeline, return CAD script and GLB if available."""
     if file.content_type.split("/")[0] != "image":
         raise HTTPException(status_code=400, detail="File must be an image")
 
@@ -114,10 +117,48 @@ async def generate_drawing(
             })
         raise HTTPException(status_code=500, detail=str(e))
 
+    glb_url = None
+    try:
+        # Convert OpenSCAD to STL via openscad CLI, then STL->GLB via trimesh
+        # Requires OpenSCAD installed on the server
+        from io import BytesIO
+        import trimesh as _trimesh
+        import numpy as _np
+
+        if cad_script:
+            # Write temporary scad file
+            with tempfile.TemporaryDirectory() as tmpdir:
+                scad_path = Path(tmpdir) / "model.scad"
+                stl_path = Path(tmpdir) / "model.stl"
+                glb_path = Path(tmpdir) / "model.glb"
+
+                scad_path.write_text(cad_script, encoding="utf-8")
+
+                # Run OpenSCAD to export STL
+                # -o output.stl input.scad
+                try:
+                    subprocess.run(["openscad", "-o", str(stl_path), str(scad_path)], check=True, capture_output=True)
+                except Exception as _e:
+                    logger.warning(f"OpenSCAD CLI not available or failed: {_e}")
+                    stl_path = None
+
+                if stl_path and stl_path.exists():
+                    # Load STL and export GLB
+                    mesh = _trimesh.load_mesh(str(stl_path))
+                    # Some STL may be Scene or Trimesh; export handles both
+                    glb_bytes = mesh.export(file_type='glb')
+                    # Save to storage
+                    glb_filename = f"{Path(filename).stem}.glb"
+                    glb_fileobj = BytesIO(glb_bytes if isinstance(glb_bytes, (bytes, bytearray)) else glb_bytes.read())
+                    glb_url = storage.save_file(glb_fileobj, glb_filename)
+    except Exception as e:
+        logger.error(f"GLB generation failed: {e}")
+
     return {
         "cad_script": cad_script,
         "record_id": record_id if 'record_id' in locals() else None,
-        "file_url": storage.get_file_url(filename)
+        "file_url": storage.get_file_url(filename),
+        "glb_url": glb_url
     }
 
 @app.get("/uploads/{record_id}")

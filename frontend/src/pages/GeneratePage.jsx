@@ -6,6 +6,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorAlert from '../components/ErrorAlert';
 import ProcessSteps from '../components/ProcessSteps';
 import CADScriptViewer from '../components/CADScriptViewer';
+import GLTFViewer from '../components/GLTFViewer';
 import { TEXT } from '../constants';
 
 export default function GeneratePage() {
@@ -13,6 +14,7 @@ export default function GeneratePage() {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [cadScript, setCadScript] = useState('');
+  const [glbUrl, setGlbUrl] = useState('');
   const [error, setError] = useState('');
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
@@ -60,6 +62,7 @@ export default function GeneratePage() {
       });
       
       setCadScript(data.cad_script || '');
+      setGlbUrl(data.glb_url || '');
       setCompletedSteps([1, 2, 3, 4]);
     } catch (err) {
       console.error('Error details:', err);
@@ -161,6 +164,9 @@ export default function GeneratePage() {
           <div className="lg:col-span-2 space-y-6">
             {cadScript && (
               <CADScriptViewer cadScript={cadScript} />
+            )}
+            {glbUrl && (
+              <GLTFViewer url={glbUrl} />
             )}
           </div>
         </div>

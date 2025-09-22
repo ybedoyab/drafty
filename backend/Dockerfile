@@ -6,6 +6,9 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
+    openscad \
+    libglu1-mesa \
+    libgl1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install dependencies
