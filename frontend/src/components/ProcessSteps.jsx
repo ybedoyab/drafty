@@ -1,16 +1,15 @@
 import { FaImage, FaEye, FaCog, FaCode } from 'react-icons/fa';
+import { TEXT } from '../constants';
 
-const steps = [
-  { id: 1, name: 'Subir imagen', icon: FaImage, description: 'Imagen 3D cargada' },
-  { id: 2, name: 'Analizar imagen', icon: FaEye, description: 'Análisis automático' },
-  { id: 3, name: 'Generar CAD', icon: FaCog, description: 'Generación de modelo' },
-  { id: 4, name: 'Código OpenSCAD', icon: FaCode, description: 'Script CAD generado' }
-];
+const steps = TEXT.steps.items.map((s) => ({
+  ...s,
+  icon: s.id === 1 ? FaImage : s.id === 2 ? FaEye : s.id === 3 ? FaCog : FaCode,
+}));
 
 export default function ProcessSteps({ currentStep = 0, completedSteps = [] }) {
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-lg font-medium text-gray-900 mb-4">Progreso del proceso</h3>
+      <h3 className="text-lg font-medium text-gray-900 mb-4">{TEXT.steps.title}</h3>
       <div className="space-y-4">
         {steps.map((step, index) => {
           const isCompleted = completedSteps.includes(step.id);

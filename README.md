@@ -1,180 +1,168 @@
-# Drafty - Generador AI de Código OpenSCAD 🚀
+# Drafty - AI OpenSCAD Code Generator 🚀
 ![Logo](https://github.com/user-attachments/assets/b4f00813-73d9-4598-b179-bc2755206a76)
 
-Proyecto para Huawei Developer Competition 2025
+Project for Huawei Developer Competition 2025
 
 ---
 
-## 🛠️ Problema que resuelve Drafty
+## Problem Drafty Solves
 
-En ingeniería, diseño y fabricación, transformar una idea o un boceto en un modelo CAD funcional es un proceso lento y requiere experiencia técnica. Muchos usuarios no dominan OpenSCAD ni tienen habilidades avanzadas de modelado 3D, lo que limita la adopción de la fabricación digital y la personalización de piezas.
+Turning ideas or sketches into functional CAD models is slow and requires technical expertise. Many users do not know OpenSCAD or advanced 3D modeling, limiting adoption of digital fabrication and part customization.
 
-**Drafty** automatiza la generación de código OpenSCAD a partir de imágenes, permitiendo que cualquier persona pueda obtener modelos paramétricos listos para impresión 3D o fabricación, sin conocimientos avanzados de CAD.
-
----
-
-## 🤖 ¿Cómo lo resuelve Drafty? (Explicación técnica)
-
-Drafty utiliza un pipeline de **agentes inteligentes** (CrewAI) que colaboran para analizar imágenes y generar código OpenSCAD funcional:
-
-1. **Agente Visualizador (Analyzer):**
-   - 🖼️ Analiza la imagen subida por el usuario.
-   - 📏 Extrae dimensiones, formas y relaciones geométricas usando visión por computadora y LLM.
-   - 📝 Genera una descripción técnica precisa y estructurada del objeto.
-
-2. **Agente Generador CAD:**
-   - 🤝 Recibe la descripción técnica.
-   - 📚 Consulta una base de conocimiento de mejores prácticas y patrones OpenSCAD.
-   - 💻 Genera el código OpenSCAD paramétrico y lo valida automáticamente.
-
-**Resultado:** El usuario recibe un script OpenSCAD limpio, paramétrico y funcional, listo para ser visualizado o modificado.
+Drafty automates generation of OpenSCAD code from images, enabling anyone to obtain parametric models ready for 3D printing or manufacturing without advanced CAD knowledge.
 
 ---
 
-## 🧩 Stack tecnológico
+## How It Works (Technical Overview)
 
-- **Frontend:**
-  - ⚛️ React + Vite
-  - 🎨 TailwindCSS (UI moderna y responsiva)
-  - 🔗 React Router DOM
-- **Backend:**
-  - 🐍 FastAPI (Python)
-  - ⚙️ Orquestador de pipeline de IA
-- **AI/Agentes:**
-  - 🧠 CrewAI (orquestación multi-agente)
-  - 🤖 Huawei Cloud ModelArts DeepSeek-R1-Distil-Qwen-32B (análisis y generación de código)
-  - 🛠️ Herramientas personalizadas: VisionTool, OpenSCAD Knowledge Tool, OpenSCAD Validator
-- **Otros:**
-  - 🟩 OpenSCAD (sintaxis y validación)
-  - 👀 Visualización recomendada: [ochafik.com/openscad2](https://ochafik.com/openscad2)
+Drafty uses a pipeline of intelligent agents (CrewAI) collaborating to analyze images and generate working OpenSCAD code:
 
----
+1. Analyzer Agent
+   - Analyzes the uploaded image
+   - Extracts dimensions, shapes, and geometric relationships using computer vision and LLMs
+   - Produces a precise structured technical description of the object
 
-## 🧠 ¿Cómo se usan los agentes?
+2. CAD Generator Agent
+   - Consumes the technical description
+   - Consults a knowledge base of OpenSCAD best practices and patterns
+   - Generates parametric OpenSCAD code and automatically validates it
 
-1. El usuario sube una imagen y (opcionalmente) una descripción.
-2. El backend ejecuta el pipeline de CrewAI:
-   - El **Agente Visualizador** analiza la imagen y produce una especificación técnica.
-   - El **Agente CAD** toma esa especificación, consulta la base de conocimiento y genera el código OpenSCAD.
-   - El código es validado y corregido automáticamente.
-3. El frontend muestra el código generado, listo para copiar, descargar o visualizar en [ochafik.com/openscad2](https://ochafik.com/openscad2).
+Result: The user receives a clean, parametric, functional OpenSCAD script, ready to visualize or modify.
 
 ---
 
-## 🚀 Instalación y uso
+## Tech Stack
 
-### 🐳 Opción 1: Docker (Recomendado)
+- Frontend:
+  - React + Vite
+  - TailwindCSS
+  - React Router DOM
+- Backend:
+  - FastAPI (Python)
+  - AI pipeline orchestrator
+- AI/Agents:
+  - CrewAI (multi-agent orchestration)
+  - Huawei Cloud ModelArts DeepSeek-R1-Distil-Qwen-32B
+  - Custom tools: VisionTool, OpenSCAD Knowledge Tool, OpenSCAD Validator
+- Other:
+  - OpenSCAD (syntax and validation)
+  - Recommended viewer: [ochafik.com/openscad2](https://ochafik.com/openscad2)
 
-1. **Clona el repositorio:**
+---
+
+## Agent Workflow
+
+1. The user uploads an image and optionally a description.
+2. The backend runs the CrewAI pipeline:
+   - The Analyzer agent produces a technical specification.
+   - The CAD agent generates OpenSCAD code based on that spec and knowledge base.
+   - The code is validated and auto-fixed.
+3. The frontend displays the generated code, ready to copy, download, or view in [ochafik.com/openscad2](https://ochafik.com/openscad2).
+
+---
+
+## Getting Started
+
+### Option 1: Docker (Recommended)
+
+1. Clone the repo:
    ```bash
    git clone https://github.com/ybedoyab/drafty.git
    cd drafty
    ```
 
-2. **Configura las variables de entorno:**
+2. Configure environment variables:
    ```bash
    cp env.example .env
-   # Edita .env con tus credenciales de DeepSeek
+   # Fill in .env based on env.example
    ```
 
-3. **Ejecuta con Docker Compose:**
+3. Run with Docker Compose:
    ```bash
    docker-compose up --build
    ```
 
-4. **Accede a la aplicación:**
-   - Frontend: [http://localhost:80](http://localhost:80)
-   - Backend API: [http://localhost:8000](http://localhost:8000)
+4. Access the app:
+   - Frontend: http://localhost:80
+   - Backend API: http://localhost:8000
 
-### 🛠️ Opción 2: Instalación manual
+### Option 2: Manual Setup
 
-#### Configuración de variables de entorno
-
-Crea un archivo `.env` en la raíz del proyecto con:
-```env
-# AI Configuration (Huawei Cloud ModelArts)
-AI_MODEL=deepseek-r1-distil-qwen-32b_raziqt
-AI_DEEPSEEK_API_KEY=tu_clave_de_huawei_modelarts_aqui
-AI_DEEPSEEK_BASE_URL=https://pangu.ap-southeast1.myhuaweicloud.com/api/v2/chat/completions
-AI_HF_TOKEN=tu_token_de_huggingface_aqui
-
-# Frontend Configuration
-FRONTEND_API_URL=http://localhost:8000
-```
+See `.env.example` for required environment variables. Create a `.env` file in the project root by copying from `.env.example` and filling your values.
 
 #### Backend (FastAPI)
 
-1. Ve a la carpeta del backend:
+1. Go to the backend folder:
    ```bash
    cd backend
    ```
 
-2. Crea y activa un entorno virtual:
+2. Create and activate a virtual environment:
    ```bash
    python -m venv .venv
-   .venv\Scripts\activate  # En Windows
-   source .venv/bin/activate  # En Linux/Mac
+   .venv\Scripts\activate  # Windows
+   source .venv/bin/activate  # Linux/Mac
    ```
 
-3. Instala dependencias:
+3. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Ejecuta el backend:
+4. Run the backend:
    ```bash
    python run.py
    ```
 
 #### Frontend (React)
 
-1. Ve a la carpeta del frontend:
+1. Go to the frontend folder:
    ```bash
    cd frontend
    ```
 
-2. Instala dependencias:
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-3. Ejecuta el servidor de desarrollo:
+3. Start the dev server:
    ```bash
    npm run dev
    ```
 
-4. Abre [http://localhost:5173](http://localhost:5173) en tu navegador.
+4. Open http://localhost:5173 in your browser.
 
 ---
 
-## ☁️ Despliegue en la nube
+## Cloud Deployment
 
-Drafty está optimizado para despliegue en **Huawei Cloud** con soporte completo para:
+Drafty is optimized for deployment on Huawei Cloud with support for:
 
-- **ECS (Elastic Cloud Server)**: Hosting de la aplicación
-- **DDS (Document Database Service)**: Base de datos MongoDB
-- **OBS (Object Storage Service)**: Almacenamiento de archivos
-- **EIP (Elastic IP)**: Acceso público seguro
+- ECS (Elastic Cloud Server): Application hosting
+- DDS (Document Database Service): MongoDB
+- OBS (Object Storage Service): File storage
+- EIP (Elastic IP): Secure public access
 
-Para instrucciones detalladas de despliegue, consulta la documentación de configuración (disponible localmente).
-
----
-
-## ℹ️ Notas importantes
-
-- El código generado es **OpenSCAD puro**. No se visualiza en 3D dentro de la app, pero puedes verlo fácilmente en [https://ochafik.com/openscad2](https://ochafik.com/openscad2) o en el programa OpenSCAD.
-- El frontend ha sido optimizado para una experiencia moderna, clara y profesional.
-- El backend genera un archivo único por cada imagen subida, evitando sobrescrituras.
+For detailed deployment instructions, refer to the local deployment docs.
 
 ---
 
-## 👨‍💻 Créditos
-- Proyecto desarrollado para Huawei Developer Competition 2025
-- Repositorio: [https://github.com/ybedoyab/drafty](https://github.com/ybedoyab/drafty)
-- Visualizador online recomendado: [https://ochafik.com/openscad2](https://ochafik.com/openscad2)
+## Notes
+
+- The generated code is plain OpenSCAD. 3D visualization is not embedded in the app, but you can view it at https://ochafik.com/openscad2 or in the OpenSCAD program.
+- The frontend is optimized for a modern, clear, professional UX.
+- The backend creates a unique file per uploaded image to avoid overwrites.
 
 ---
 
-### ✍️ Autores
-- **Yulian Bedoya** (estudiante de Ingeniería Mecánica)
-- **Marycielo Berrio Zapata** (estudiante de Ingeniería en Sistemas)
+## Credits
+- Project developed for Huawei Developer Competition 2025
+- Repository: https://github.com/ybedoyab/drafty
+- Recommended online viewer: https://ochafik.com/openscad2
+
+---
+
+### Authors
+- Yulian Bedoya (Mechanical Engineering student)
+- Marycielo Berrio Zapata (Systems Engineering student)

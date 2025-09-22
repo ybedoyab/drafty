@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Logo from '../assets/Logo.png';
+import { TEXT } from '../constants';
 
 export default function Header() {
   return (
@@ -12,12 +13,12 @@ export default function Header() {
           <Link
             to="/"
             className="text-gray-600 hover:text-indigo-600 font-medium transition duration-150 px-2 py-1 rounded hover:bg-indigo-50">
-            Inicio
+            {TEXT.nav.home}
           </Link>
           <Link
             to="/generate"
             className="text-gray-600 hover:text-indigo-600 font-medium transition duration-150 px-2 py-1 rounded hover:bg-indigo-50">
-            Generar
+            {TEXT.nav.generate}
           </Link>
         </nav>
       </div>

@@ -5,6 +5,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorAlert from '../components/ErrorAlert';
 import ProcessSteps from '../components/ProcessSteps';
 import CADScriptViewer from '../components/CADScriptViewer';
+import { TEXT } from '../constants';
 
 export default function GeneratePage() {
   const [file, setFile] = useState(null);
@@ -63,12 +64,12 @@ export default function GeneratePage() {
       setCompletedSteps([1, 2, 3, 4]);
     } catch (err) {
       console.error('Error details:', err);
-      let errorMessage = 'Error al procesar la imagen';
+      let errorMessage = TEXT.errors.processing;
       
       if (err.response?.data?.detail) {
         errorMessage = err.response.data.detail;
       } else if (err.code === 'NETWORK_ERROR' || err.message?.includes('Network Error')) {
-        errorMessage = 'Error de conexión. Verifica que el backend esté ejecutándose.';
+        errorMessage = TEXT.errors.network;
       } else if (err.message) {
         errorMessage = err.message;
       }
@@ -84,9 +85,9 @@ export default function GeneratePage() {
     <div className="min-h-screen bg-slate-100 py-12 px-4">
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold mb-2">Generar CAD</h2>
+          <h2 className="text-3xl font-bold mb-2">{TEXT.generatePage.title}</h2>
           <p className="text-gray-600">
-            Sube una imagen de un objeto 3D y obtén su código OpenSCAD
+            {TEXT.generatePage.subtitle}
           </p>
         </div>
 
@@ -103,10 +104,10 @@ export default function GeneratePage() {
               </div>
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-red-800">
-                  Backend no disponible
+                  {TEXT.backendStatus.unhealthyTitle}
                 </h3>
                 <div className="mt-2 text-sm text-red-700">
-                  <p>No se puede conectar al backend. Verifica que el servidor esté ejecutándose.</p>
+                  <p>{TEXT.backendStatus.unhealthyDesc}</p>
                 </div>
               </div>
             </div>
@@ -123,10 +124,10 @@ export default function GeneratePage() {
               </div>
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-green-800">
-                  Backend conectado
+                  {TEXT.backendStatus.healthyTitle}
                 </h3>
                 <div className="mt-2 text-sm text-green-700">
-                  <p>Sistema listo para procesar imágenes.</p>
+                  <p>{TEXT.backendStatus.healthyDesc}</p>
                 </div>
               </div>
             </div>
@@ -150,7 +151,7 @@ export default function GeneratePage() {
                 className="w-full flex justify-center items-center gap-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {loading && <LoadingSpinner />}
-                {loading ? 'Procesando imagen...' : 'Generar CAD'}
+                {loading ? TEXT.generatePage.buttonLoading : TEXT.generatePage.buttonIdle}
               </button>
             </form>
 

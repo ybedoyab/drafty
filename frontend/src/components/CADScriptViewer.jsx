@@ -1,5 +1,6 @@
 import { FaCode, FaCopy, FaDownload } from 'react-icons/fa';
 import { useState } from 'react';
+import { TEXT } from '../constants';
 
 function cleanCadScript(cadScript) {
   // Remove leading/trailing triple backticks and optional language
@@ -39,7 +40,7 @@ export default function CADScriptViewer({ cadScript, className = "" }) {
   if (!cadScript) {
     return (
       <div className={`bg-gray-100 rounded-lg p-8 text-center ${className}`}>
-        <p className="text-gray-500">No hay script CAD para mostrar</p>
+        <p className="text-gray-500">{TEXT.cadViewer.empty}</p>
       </div>
     );
   }
@@ -49,7 +50,7 @@ export default function CADScriptViewer({ cadScript, className = "" }) {
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center space-x-2">
           <FaCode className="text-indigo-600" />
-          <h3 className="text-lg font-medium text-gray-900">Código OpenSCAD Generado</h3>
+          <h3 className="text-lg font-medium text-gray-900">{TEXT.cadViewer.title}</h3>
         </div>
         <div className="flex items-center space-x-2">
           <button
@@ -57,14 +58,14 @@ export default function CADScriptViewer({ cadScript, className = "" }) {
             className="flex items-center space-x-2 px-3 py-1 text-sm bg-green-600 text-white hover:bg-green-700 rounded-md transition-colors"
           >
             <FaDownload size={14} />
-            <span>Descargar</span>
+            <span>{TEXT.cadViewer.download}</span>
           </button>
           <button
             onClick={handleCopy}
             className="flex items-center space-x-2 px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
           >
             <FaCopy size={14} />
-            <span>{copied ? '¡Copiado!' : 'Copiar'}</span>
+            <span>{copied ? TEXT.cadViewer.copied : TEXT.cadViewer.copy}</span>
           </button>
         </div>
       </div>
