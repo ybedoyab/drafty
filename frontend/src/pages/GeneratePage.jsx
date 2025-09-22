@@ -166,7 +166,19 @@ export default function GeneratePage() {
               <CADScriptViewer cadScript={cadScript} />
             )}
             {glbUrl && (
-              <GLTFViewer url={glbUrl} />
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-medium text-gray-900">{TEXT.gltfViewer.title}</h3>
+                  <a
+                    href={glbUrl}
+                    download
+                    className="inline-flex items-center space-x-2 px-3 py-1 text-sm bg-indigo-600 text-white hover:bg-indigo-700 rounded-md transition-colors"
+                  >
+                    <span>{TEXT.gltfViewer.download}</span>
+                  </a>
+                </div>
+                <GLTFViewer url={glbUrl} />
+              </div>
             )}
           </div>
         </div>

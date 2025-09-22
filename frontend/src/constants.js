@@ -62,6 +62,10 @@ export const TEXT = {
     description: 'Your DXF file is ready to download. This file contains the engineering plan generated from your image.',
     downloadDXF: 'Download DXF'
   },
+  gltfViewer: {
+    title: 'Generated 3D Model (GLB)',
+    download: 'Download GLB'
+  },
   errors: {
     processing: 'Error processing the image',
     network: 'Connection error. Make sure the backend is running.'
