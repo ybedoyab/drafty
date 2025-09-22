@@ -15,6 +15,10 @@ import os
 import sys
 from datetime import datetime
 from urllib.parse import quote_plus
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde .env
+load_dotenv()
 
 def test_mongodb_connection():
     """Probar conexión a MongoDB"""

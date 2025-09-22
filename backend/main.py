@@ -83,7 +83,10 @@ async def generate_drawing(
     # Save file using storage manager
     try:
         file_content = await file.read()
-        file_path = storage.save_file(file_content, filename)
+        # Convert bytes to BytesIO for storage
+        from io import BytesIO
+        file_obj = BytesIO(file_content)
+        file_path = storage.save_file(file_obj, filename)
         logger.info(f"File saved: {file_path}")
     except Exception as e:
         logger.error(f"Error saving file: {e}")

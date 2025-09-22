@@ -5,29 +5,48 @@ from typing import List
 from dotenv import load_dotenv
 from crewai_tools import VisionTool
 from langchain_openai import ChatOpenAI
-from draftycrew.tools import OpenSCADValidator, OpenSCADKnowledgeTool
 import os
 
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from main project .env file
+import sys
+from pathlib import Path
+# Go up from ai/ to the main project root
+main_project_root = Path(__file__).parent.parent
+env_file = main_project_root / ".env"
+load_dotenv(env_file)
 
-# Use local vision tool for local files
+# Hard guard: ensure no global OpenAI base overrides (prevents LiteLLM from sending to Huawei)
+for var in [
+    "OPENAI_API_BASE",
+    "OPENAI_BASE_URL",
+    "OPENAI_API_TYPE",
+    "LITELLM_BASE",
+    "LITELLM_API_BASE",
+    "OPENAI_BASE",
+]:
+    if var in os.environ:
+        os.environ.pop(var, None)
+
+# Use OpenAI for vision analysis
+from langchain_openai import ChatOpenAI
+
+# OpenAI LLM for vision (better image analysis)
+openai_llm = ChatOpenAI(
+    model=os.getenv("AI_OPENAI_MODEL", "gpt-4o"),
+    api_key=os.getenv("OPENAI_API_KEY"),
+    temperature=0.1
+)
+
+# Vision tool using OpenAI
 vision_tool = VisionTool()
 
-# Initialize OpenSCAD tools
-openscad_validator = OpenSCADValidator()
-openscad_knowledge = OpenSCADKnowledgeTool()
+# CAD generation handled directly in orchestrator; no CAD agent here
 
-# Initialize LLMs
-gpt4o_llm = ChatOpenAI(
-    model=os.getenv("MODEL", "gpt-4o"),
-    temperature=0.1,
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+# (debug removed)
 
 @CrewBase
 class Draftycrew():
@@ -48,19 +67,11 @@ class Draftycrew():
             config=self.agents_config['visualizer'], # type: ignore[index]
             verbose=True,
             tools=[vision_tool],
-            llm=gpt4o_llm,
+            llm=openai_llm,  # Use OpenAI for vision analysis
             allow_delegation=False
         )
 
-    @agent
-    def cad_generator(self) -> Agent:
-        return Agent(
-            config=self.agents_config['cad_generator'], # type: ignore[index]
-            verbose=True,
-            tools=[openscad_knowledge, openscad_validator],  # Add OpenSCAD tools
-            llm=gpt4o_llm,  # Using GPT-4o for CAD generation
-            allow_delegation=False
-        )
+    # CAD generator agent removed; generation done outside CrewAI
 
     # To learn more about structured task outputs,
     # task dependencies, and task callbacks, check out the documentation:
@@ -71,20 +82,7 @@ class Draftycrew():
             config=self.tasks_config['analyze_image'], # type: ignore[index]
         )
 
-    @task
-    def generate_cad(self) -> Task:
-        def output_file_from_inputs(inputs):
-            return inputs.get('cad_script_path', 'generated_cad_script.scad')
-        return Task(
-            config=self.tasks_config['generate_cad'], # type: ignore[index]
-            output_file=output_file_from_inputs
-        )
-
-    def generate_cad_task(self, output_file: str) -> Task:
-        return Task(
-            config=self.tasks_config['generate_cad'], # type: ignore[index]
-            output_file=output_file
-        )
+    # CAD task removed; orchestrator writes file directly
 
     @crew
     def crew(self) -> Crew:

@@ -4,6 +4,11 @@ from typing import Optional, BinaryIO
 from pathlib import Path
 import boto3
 from botocore.exceptions import ClientError
+import requests
+import hashlib
+import base64
+import hmac
+from datetime import datetime, timezone
 
 # Configure logging
 log_level = os.getenv("BACKEND_LOG_LEVEL", "INFO").upper()
@@ -30,6 +35,25 @@ class StorageManager:
     def _setup_huawei_obs(self):
         """Setup Huawei Cloud OBS storage"""
         try:
+            # Log environment variables (mask sensitive data)
+            logging.info("🔧 OBS Configuration Debug:")
+            logging.info(f"   STORAGE_TYPE: {os.getenv('STORAGE_TYPE')}")
+            logging.info(f"   STORAGE_OBS_ENDPOINT: {os.getenv('STORAGE_OBS_ENDPOINT')}")
+            logging.info(f"   STORAGE_OBS_REGION: {os.getenv('STORAGE_OBS_REGION', 'ap-southeast-1')}")
+            logging.info(f"   STORAGE_OBS_BUCKET_NAME: {os.getenv('STORAGE_OBS_BUCKET_NAME')}")
+            
+            # Mask sensitive keys for logging
+            access_key = os.getenv("STORAGE_OBS_ACCESS_KEY")
+            secret_key = os.getenv("STORAGE_OBS_SECRET_KEY")
+            if access_key:
+                logging.info(f"   STORAGE_OBS_ACCESS_KEY: {access_key[:8]}...{access_key[-4:]}")
+            else:
+                logging.error("   STORAGE_OBS_ACCESS_KEY: NOT SET")
+            if secret_key:
+                logging.info(f"   STORAGE_OBS_SECRET_KEY: {secret_key[:8]}...{secret_key[-4:]}")
+            else:
+                logging.error("   STORAGE_OBS_SECRET_KEY: NOT SET")
+            
             # Validate required environment variables
             required_vars = [
                 "STORAGE_OBS_ENDPOINT",
@@ -38,80 +62,122 @@ class StorageManager:
                 "STORAGE_OBS_BUCKET_NAME"
             ]
             
-            for var in required_vars:
-                if not os.getenv(var):
-                    raise ValueError(f"Missing required environment variable: {var}")
+            missing_vars = [var for var in required_vars if not os.getenv(var)]
+            if missing_vars:
+                raise ValueError(f"Missing required environment variables: {missing_vars}")
             
-            self.s3_client = boto3.client(
-                's3',
-                endpoint_url=os.getenv("STORAGE_OBS_ENDPOINT"),
-                aws_access_key_id=os.getenv("STORAGE_OBS_ACCESS_KEY"),
-                aws_secret_access_key=os.getenv("STORAGE_OBS_SECRET_KEY"),
-                region_name=os.getenv("STORAGE_OBS_REGION", "ap-southeast-1")
-            )
+            # Get configuration
+            self.endpoint = os.getenv("STORAGE_OBS_ENDPOINT")
+            self.region = os.getenv("STORAGE_OBS_REGION", "ap-southeast-1")
             self.bucket_name = os.getenv("STORAGE_OBS_BUCKET_NAME")
             
-            # Test bucket access
-            self.s3_client.head_bucket(Bucket=self.bucket_name)
-            logging.info(f"Huawei Cloud OBS storage configured - Bucket: {self.bucket_name}")
+            # Create regional endpoint
+            regional_endpoint = f"https://obs.{self.region}.myhuaweicloud.com"
+            logging.info(f"   Regional endpoint: {regional_endpoint}")
+            
+            # Create boto3 client with Huawei OBS configuration
+            self.s3_client = boto3.client(
+                's3',
+                endpoint_url=regional_endpoint,
+                aws_access_key_id=os.getenv("STORAGE_OBS_ACCESS_KEY"),
+                aws_secret_access_key=os.getenv("STORAGE_OBS_SECRET_KEY"),
+                region_name=self.region,
+                config=boto3.session.Config(
+                    signature_version='s3v4',
+                    s3={
+                        'addressing_style': 'virtual'
+                    }
+                )
+            )
+            
+            logging.info("✅ Huawei OBS client created successfully")
             
         except Exception as e:
-            logging.error(f"Failed to setup Huawei OBS: {e}")
-            logging.info("Falling back to local storage")
-            self._setup_local()
-            self.storage_type = "local"
+            logging.error(f"❌ Error setting up Huawei OBS: {e}")
+            raise
     
     def save_file(self, file_content: BinaryIO, filename: str) -> str:
-        """Save file and return the path/URL"""
+        """Save file to configured storage"""
         if self.storage_type == "local":
             return self._save_local(file_content, filename)
         else:
             return self._save_cloud(file_content, filename)
     
     def _save_local(self, file_content: BinaryIO, filename: str) -> str:
-        """Save file locally"""
+        """Save file to local storage"""
         file_path = self.upload_dir / filename
         with open(file_path, "wb") as f:
             f.write(file_content.read())
         return str(file_path)
     
     def _save_cloud(self, file_content: BinaryIO, filename: str) -> str:
-        """Save file to cloud storage"""
+        """Save file to cloud storage using direct PUT method"""
+        logging.info(f"☁️ Uploading file to cloud storage: {filename}")
+        logging.info(f"   Bucket: {self.bucket_name}")
+        logging.info(f"   Storage type: {self.storage_type}")
+
         try:
-            # Reset file pointer
+            # Reset file pointer and read data
             file_content.seek(0)
+            file_data = file_content.read()
+
+            # Use PUT direct method with virtual host domain
+            put_url = f"https://{self.bucket_name}.obs.ap-southeast-1.myhuaweicloud.com/{filename}"
+            headers = {
+                'Content-Type': self._get_content_type(filename),
+                'Content-Length': str(len(file_data))
+            }
             
-            # Upload to cloud storage
-            self.s3_client.upload_fileobj(
-                file_content,
-                self.bucket_name,
-                filename,
-                ExtraArgs={
-                    'ContentType': self._get_content_type(filename),
-                    'ACL': 'public-read'  # Make files publicly accessible
-                }
+            # Create signature for PUT direct
+            date_str = datetime.now(timezone.utc).strftime('%a, %d %b %Y %H:%M:%S GMT')
+            string_to_sign = f"PUT\n\n{headers['Content-Type']}\n{date_str}\n/{self.bucket_name}/{filename}"
+            
+            # Create signature
+            signature = base64.b64encode(
+                hmac.new(
+                    os.getenv("STORAGE_OBS_SECRET_KEY").encode('utf-8'),
+                    string_to_sign.encode('utf-8'),
+                    hashlib.sha1
+                ).digest()
+            ).decode('utf-8')
+            
+            # Add authentication headers
+            headers.update({
+                'Authorization': f'OBS {os.getenv("STORAGE_OBS_ACCESS_KEY")}:{signature}',
+                'Date': date_str
+            })
+            
+            # Make PUT direct request
+            put_response = requests.put(
+                put_url,
+                data=file_data,
+                headers=headers,
+                timeout=60
             )
             
-            # Return public URL
-            if self.storage_type == "huawei_obs":
-                return f"{os.getenv('STORAGE_OBS_ENDPOINT')}/{self.bucket_name}/{filename}"
+            if put_response.status_code in [200, 201, 204]:
+                logging.info(f"✅ File uploaded successfully via direct PUT API: {filename}")
+                return self.get_public_url(filename)
             else:
-                return f"https://{self.bucket_name}.s3.amazonaws.com/{filename}"
-                
-        except ClientError as e:
-            logging.error(f"Error uploading to cloud storage: {e}")
-            # Fallback to local storage
-            return self._save_local(file_content, filename)
+                raise Exception(f"Direct PUT API failed: {put_response.status_code} - {put_response.text}")
+
+        except Exception as e:
+            logging.error(f"❌ Error uploading file to Huawei OBS via direct PUT: {e}")
+            raise
     
-    def get_file_url(self, filename: str) -> str:
-        """Get public URL for a file"""
-        if self.storage_type == "local":
-            return f"/uploads/{filename}"
+    def get_public_url(self, filename: str) -> str:
+        """Get public URL for uploaded file"""
+        if self.storage_type == "huawei_obs":
+            return f"https://{self.bucket_name}.obs.ap-southeast-1.myhuaweicloud.com/{filename}"
         else:
-            return f"{os.getenv('STORAGE_OBS_ENDPOINT')}/{self.bucket_name}/{filename}"
+            return f"/local-files/{filename}"
+
+    def get_file_url(self, filename: str) -> str:
+        """Compatibility method used by backend/main.py to return a retrievable URL"""
+        return self.get_public_url(filename)
     
     def delete_file(self, filename: str) -> bool:
-        """Delete a file"""
+        """Delete file from storage"""
         if self.storage_type == "local":
             try:
                 file_path = self.upload_dir / filename

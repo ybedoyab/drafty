@@ -1,0 +1,24 @@
+OPENSCAD COMMON PATTERNS — CONCISE SUMMARY
+==========================================
+
+FURNITURE (PROPORTIONS)
+- Tables/chairs: tops with cube([...]); legs with cylinder(h,d) at corners (nested for with offsets).
+- Chaise/sofa: body via stacked cube() sections; backrest using rotate([angle,0,0]) + cube().
+
+FILLET/ROUNDED EDGES
+- Global fillets: minkowski() of base solid with sphere(r=radius) (expensive).
+- Rounded box corners: hull() of spheres at vertices (fast for boxes).
+
+HOLE ARRAYS
+- Double nested for with translate([col*spacing,row*spacing,0]) and cylinder(h,d).
+
+COMMON TRANSFORMS
+- Centering: translate([-w/2,-d/2,-h/2]) before children();
+- Symmetry: union(){ children(); mirror([1,0,0]) children(); }.
+
+BASIC VALIDATION
+- assert(dimension>0) in validation modules.
+
+COMMON FIXES
+- 2D→3D: replace circle() in 3D context with cylinder(h=..., r=...).
+- Use hull() with 3D children; add missing semicolons after every statement.

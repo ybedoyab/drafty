@@ -42,7 +42,7 @@ Drafty utiliza un pipeline de **agentes inteligentes** (CrewAI) que colaboran pa
   - ⚙️ Orquestador de pipeline de IA
 - **AI/Agentes:**
   - 🧠 CrewAI (orquestación multi-agente)
-  - 🤖 OpenAI GPT-4o (análisis y generación de código)
+  - 🤖 Huawei Cloud ModelArts DeepSeek-R1-Distil-Qwen-32B (análisis y generación de código)
   - 🛠️ Herramientas personalizadas: VisionTool, OpenSCAD Knowledge Tool, OpenSCAD Validator
 - **Otros:**
   - 🟩 OpenSCAD (sintaxis y validación)
@@ -74,7 +74,7 @@ Drafty utiliza un pipeline de **agentes inteligentes** (CrewAI) que colaboran pa
 2. **Configura las variables de entorno:**
    ```bash
    cp env.example .env
-   # Edita .env con tus credenciales de OpenAI
+   # Edita .env con tus credenciales de DeepSeek
    ```
 
 3. **Ejecuta con Docker Compose:**
@@ -92,9 +92,10 @@ Drafty utiliza un pipeline de **agentes inteligentes** (CrewAI) que colaboran pa
 
 Crea un archivo `.env` en la raíz del proyecto con:
 ```env
-# AI Configuration
-AI_MODEL=gpt-4o
-AI_OPENAI_API_KEY=tu_clave_de_openai_aqui
+# AI Configuration (Huawei Cloud ModelArts)
+AI_MODEL=deepseek-r1-distil-qwen-32b_raziqt
+AI_DEEPSEEK_API_KEY=tu_clave_de_huawei_modelarts_aqui
+AI_DEEPSEEK_BASE_URL=https://pangu.ap-southeast1.myhuaweicloud.com/api/v2/chat/completions
 AI_HF_TOKEN=tu_token_de_huggingface_aqui
 
 # Frontend Configuration

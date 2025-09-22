@@ -1,0 +1,30 @@
+OPENSCAD BEST PRACTICES — ESSENTIAL SUMMARY
+==========================================
+
+SYNTAX
+- End every statement with a semicolon (;). Use braces {} for blocks with children.
+- Use correct named parameters (h, r, d, height, center=false).
+
+3D PRIMITIVES
+- cube([x,y,z], center=false), cylinder(h=H, r|d), sphere(r|d).
+
+TRANSFORMATIONS
+- translate([x,y,z]) { ... }, rotate([a,b,c]) { ... }, scale([sx,sy,sz]) { ... }.
+
+CSG
+- union() { ... }, difference() { ... }, intersection() { ... }.
+
+2D → 3D
+- polygon(points=[[x,y], ...]); linear_extrude(height=H) { polygon(...); }.
+
+COMMON MISTAKES
+- Using 2D in 3D context without extrusion; wrong param names; missing semicolons.
+
+PARAMETRIC DESIGN
+- Define scalar variables at the top (e.g., length=100; width=50;).
+
+VALIDATION
+- Positive dimensions only; increase $fn for smoother curves.
+
+OUTPUT
+- Pure, valid OpenSCAD only (no markdown, no comments); must compile without errors.

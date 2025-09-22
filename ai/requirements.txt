@@ -1,0 +1,14 @@
+# AI Module Dependencies
+# Core AI and ML dependencies
+crewai[tools]>=0.193.0
+langchain-openai>=0.2.14
+openai>=1.108.0
+
+# Vision and image processing
+Pillow>=10.0.0
+
+# Environment and configuration
+python-dotenv>=1.0.0
+
+# Utilities
+pathlib2>=2.3.7
