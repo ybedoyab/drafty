@@ -14,17 +14,6 @@ main_project_root = Path(__file__).parent.parent
 env_file = main_project_root / ".env"
 load_dotenv(env_file)
 
-for var in [
-    "OPENAI_API_BASE",
-    "OPENAI_BASE_URL",
-    "OPENAI_API_TYPE",
-    "LITELLM_BASE",
-    "LITELLM_API_BASE",
-    "OPENAI_BASE",
-]:
-    if var in os.environ:
-        os.environ.pop(var, None)
-
 openai_llm = ChatOpenAI(
     model=os.getenv("AI_OPENAI_MODEL", "gpt-4o"),
     api_key=os.getenv("OPENAI_API_KEY"),
