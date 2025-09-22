@@ -1,3 +1,4 @@
+"""Tool exports for OpenSCAD validator and knowledge base."""
 from .openscad_validator import OpenSCADValidator
 from .openscad_knowledge_tool import OpenSCADKnowledgeTool
 

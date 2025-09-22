@@ -1,6 +1,4 @@
-"""
-LLM Wrapper to bypass LiteLLM issues with Huawei Cloud ModelArts
-"""
+"""LLM wrapper to call Huawei Cloud ModelArts chat.completions directly."""
 import os
 import requests
 import json
@@ -13,17 +11,15 @@ try:
 except Exception:
     import ai.config.settings as settings
 
-# Load environment variables from the main project .env file
 from pathlib import Path
 main_project_root = Path(__file__).parent.parent
 env_file = main_project_root / ".env"
 load_dotenv(env_file)
 
 class HuaweiCloudLLM(ChatOpenAI):
-    """Wrapper for Huawei ModelArts chat.completions using DeepSeek API key as Bearer token"""
+    """Wrapper for Huawei ModelArts chat.completions using Bearer token."""
     
     def __init__(self, **kwargs):
-        # Huawei ModelArts endpoint provided by competition
         self._base_url = kwargs.get(
             "base_url",
             os.getenv(
@@ -35,11 +31,10 @@ class HuaweiCloudLLM(ChatOpenAI):
             "model",
             os.getenv("AI_DEEPSEEK_MODEL", os.getenv("AI_MODEL", "deepseek-r1-distil-qwen-32b_raziqt")),
         )
-        # Store token locally to avoid relying on superclass attribute names
         self._token = kwargs.get("api_key", os.getenv("DEEPSEEK_API_KEY"))
         
         super().__init__(
-            model="gpt-3.5-turbo",  # Use a known model name
+            model=self._deepseek_model,
             temperature=kwargs.get("temperature", 0.1),
             api_key=self._token,
             base_url=self._base_url,
@@ -74,9 +69,8 @@ class HuaweiCloudLLM(ChatOpenAI):
         run_manager = None,
         **kwargs: Any,
     ):
-        """Override _generate to call Huawei ModelArts directly"""
+        """Override _generate to call Huawei ModelArts directly."""
         
-        # Convert messages to the format expected by DeepSeek
         formatted_messages = []
         for message in messages:
             if isinstance(message, HumanMessage):
@@ -86,7 +80,6 @@ class HuaweiCloudLLM(ChatOpenAI):
             elif isinstance(message, SystemMessage):
                 formatted_messages.append({"role": "system", "content": message.content})
         
-        # Prepare payload for Huawei ModelArts
         payload = {
             "model": self.deepseek_model,
             "messages": formatted_messages,
@@ -94,7 +87,6 @@ class HuaweiCloudLLM(ChatOpenAI):
             "max_tokens": kwargs.get("max_tokens", settings.DEFAULT_MAX_TOKENS)
         }
         
-        # Prepare headers (ALWAYS Authorization: Bearer)
         token = getattr(self, "_token", None) or os.getenv("DEEPSEEK_API_KEY")
         headers = {
             "Content-Type": "application/json",
@@ -102,7 +94,6 @@ class HuaweiCloudLLM(ChatOpenAI):
         }
         
         try:
-            # Make direct API call with retries/backoff
             import time
             read_timeout = settings.HUAWEI_API_READ_TIMEOUT_SECONDS
             connect_timeout = settings.HUAWEI_API_CONNECT_TIMEOUT_SECONDS
@@ -131,13 +122,11 @@ class HuaweiCloudLLM(ChatOpenAI):
                         continue
                     raise
                 except Exception as e:
-                    # Non-timeout errors propagate immediately
                     raise
             
         except Exception as e:
             raise Exception(f"Huawei ModelArts API call failed: {e}")
 
-# Create instance
 huawei_llm_wrapper = HuaweiCloudLLM(
     model=os.getenv("AI_DEEPSEEK_MODEL", os.getenv("AI_MODEL", "deepseek-r1-distil-qwen-32b_raziqt")),
     api_key=os.getenv("DEEPSEEK_API_KEY"),

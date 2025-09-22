@@ -1,3 +1,4 @@
+// Header: top navigation bar with logo and links
 import { Link } from 'react-router-dom';
 import Logo from '../assets/Logo.png';
 import { TEXT } from '../constants';

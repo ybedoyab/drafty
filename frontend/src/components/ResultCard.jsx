@@ -1,4 +1,6 @@
+// ResultCard: shows DXF download when available
 import { FaFileDownload, FaCheckCircle } from 'react-icons/fa';
+import { TEXT } from '../constants';
 
 export default function ResultCard({ dxfPath }) {
   if (!dxfPath) return null;
@@ -8,12 +10,11 @@ export default function ResultCard({ dxfPath }) {
       <div className="flex items-center space-x-3 mb-4">
         <FaCheckCircle className="text-green-500" size={24} />
         <h3 className="text-lg font-medium text-gray-900">
-          ¡Plano generado exitosamente!
+          {TEXT.resultCard.successTitle}
         </h3>
       </div>
       <p className="text-gray-600 mb-4">
-        Tu archivo DXF está listo para descargar. Este archivo contiene el plano de
-        ingeniería generado a partir de tu imagen.
+        {TEXT.resultCard.description}
       </p>
       <a
         href={dxfPath}
@@ -21,7 +22,7 @@ export default function ResultCard({ dxfPath }) {
         className="inline-flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
       >
         <FaFileDownload />
-        <span>Descargar DXF</span>
+        <span>{TEXT.resultCard.downloadDXF}</span>
       </a>
     </div>
   );

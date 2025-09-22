@@ -1,14 +1,13 @@
+// CADScriptViewer: shows generated OpenSCAD code with copy and download actions
 import { FaCode, FaCopy, FaDownload } from 'react-icons/fa';
 import { useState } from 'react';
 import { TEXT } from '../constants';
 
 function cleanCadScript(cadScript) {
-  // Remove leading/trailing triple backticks and optional language
   let code = cadScript
     .replace(/^```[a-zA-Z]*\s*/, '')
     .replace(/```\s*$/, '')
     .trim();
-  // If there is a second block of triple backticks, cut everything after the first
   const secondBacktick = code.indexOf('```');
   if (secondBacktick !== -1) {
     code = code.substring(0, secondBacktick).trim();

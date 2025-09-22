@@ -1,3 +1,4 @@
+"""Connectivity checks for Huawei ModelArts and OpenAI using env from project root."""
 import os
 import sys
 from pathlib import Path
@@ -5,8 +6,6 @@ import json
 import requests
 from dotenv import load_dotenv
 
-
-# Ensure project root is on path and .env is loaded
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 ENV_PATH = PROJECT_ROOT / ".env"
 load_dotenv(ENV_PATH)
@@ -22,7 +21,6 @@ def mask(value: str, show: int = 4) -> str:
 
 def check_env():
     print("Environment variables check:")
-    # Huawei ModelArts (Competition) config
     hw_token = os.getenv("DEEPSEEK_API_KEY")
     hw_base_url = os.getenv(
         "AI_DEEPSEEK_BASE_URL",
@@ -34,7 +32,6 @@ def check_env():
     )
     hw_model_llama = os.getenv("AI_HUAWEI_LLAMA_MODEL", "distill-llama-8b_46e6iu")
 
-    # OpenAI for vision
     openai_key = os.getenv("OPENAI_API_KEY")
     openai_model = os.getenv("AI_OPENAI_MODEL") or "gpt-4o"
 
@@ -80,7 +77,6 @@ def test_huawei_modelarts_chat(hw_token: str, base_url: str, model: str, auth_he
 
 def test_openai_models(openai_key: str, model: str) -> None:
     print("\nOpenAI API key sanity check (no billing used):")
-    # Use models endpoint – low-cost metadata call
     url = "https://api.openai.com/v1/models"
     headers = {
         "Authorization": f"Bearer {openai_key}",
@@ -110,7 +106,6 @@ if __name__ == "__main__":
     ) = check_env()
 
     if hw_token:
-        # Use Authorization: Bearer with DeepSeek key
         test_huawei_modelarts_chat(hw_token, hw_base_url, hw_model_qwen, auth_header="Authorization")
         test_huawei_modelarts_chat(hw_token, hw_base_url, hw_model_llama, auth_header="Authorization")
     else:

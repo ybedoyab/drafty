@@ -1,9 +1,4 @@
-"""
-Centralized runtime settings for AI modules.
-
-No new environment variables are introduced here; these are hardcoded
-defaults to keep the .env minimal. Adjust values here if needed.
-"""
+"""Centralized runtime settings for AI modules (no new env vars here)."""
 
 # Huawei ModelArts HTTP behavior
 HUAWEI_API_CONNECT_TIMEOUT_SECONDS = 20

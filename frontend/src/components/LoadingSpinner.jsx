@@ -1,3 +1,4 @@
+// LoadingSpinner: simple animated spinner icon
 import { FaSpinner } from 'react-icons/fa';
 
 export default function LoadingSpinner({ size = 20, className = "" }) {

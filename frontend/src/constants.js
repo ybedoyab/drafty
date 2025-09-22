@@ -51,11 +51,16 @@ export const TEXT = {
     ]
   },
   cadViewer: {
-    empty: 'No CAD script to display',
+    empty: 'No CAD model to display',
     title: 'Generated OpenSCAD Code',
     download: 'Download',
     copy: 'Copy',
     copied: 'Copied!'
+  },
+  resultCard: {
+    successTitle: 'Plan generated successfully!',
+    description: 'Your DXF file is ready to download. This file contains the engineering plan generated from your image.',
+    downloadDXF: 'Download DXF'
   },
   errors: {
     processing: 'Error processing the image',

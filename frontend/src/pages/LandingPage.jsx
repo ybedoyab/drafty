@@ -1,3 +1,4 @@
+// LandingPage: hero section with tagline and CTA to generation flow
 import { Link } from 'react-router-dom';
 import Logo from '../assets/Logo.png';
 import { TEXT } from '../constants';

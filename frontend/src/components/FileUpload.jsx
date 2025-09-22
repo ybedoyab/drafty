@@ -1,3 +1,4 @@
+// FileUpload: drag-and-drop uploader with optional description field
 import { useState } from 'react';
 import { FaUpload, FaTimes, FaInfoCircle } from 'react-icons/fa';
 import { TEXT } from '../constants';
@@ -100,7 +101,6 @@ export default function FileUpload({ onFileSelect, selectedFile, onDescriptionCh
             </div>
           </div>
 
-          {/* Optional Description Toggle */}
           <div className="border rounded-lg p-4 bg-white">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">

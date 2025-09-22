@@ -1,3 +1,4 @@
+"""Tool providing OpenSCAD best practices and pattern guidance."""
 from crewai.tools import BaseTool
 from typing import Type
 from pydantic import BaseModel, Field
@@ -19,7 +20,6 @@ class OpenSCADKnowledgeTool(BaseTool):
     def _run(self, query: str) -> str:
         """Provide OpenSCAD knowledge based on the query."""
         
-        # Load knowledge base files
         knowledge_path = os.path.join(os.path.dirname(__file__), '..', '..', 'knowledge')
         
         best_practices = ""
@@ -37,7 +37,6 @@ class OpenSCADKnowledgeTool(BaseTool):
         except FileNotFoundError:
             common_patterns = "Common patterns file not found"
         
-        # Combine knowledge
         full_knowledge = f"""
 OPENSCAD KNOWLEDGE BASE
 =======================
@@ -54,7 +53,6 @@ BASED ON YOUR QUERY, HERE ARE THE RELEVANT GUIDELINES:
 
 """
         
-        # Provide specific guidance based on query
         query_lower = query.lower()
         
         if 'furniture' in query_lower or 'chair' in query_lower or 'table' in query_lower:

@@ -1,7 +1,4 @@
-"""
-Huawei Cloud ModelArts LLM Configuration
-Direct integration with Huawei Cloud ModelArts API
-"""
+"""Huawei Cloud ModelArts LLM: direct integration with chat.completions API."""
 import os
 import requests
 import json
@@ -38,7 +35,6 @@ class HuaweiModelArtsLLM(LLM):
         )
     
     def invoke(self, input, config=None, **kwargs):
-        """Invoke the LLM with input"""
         if isinstance(input, str):
             return self._call(input, **kwargs)
         elif isinstance(input, list):
@@ -47,16 +43,13 @@ class HuaweiModelArtsLLM(LLM):
             raise ValueError("Input must be string or list of messages")
     
     def predict(self, text: str, **kwargs) -> str:
-        """Predict text completion"""
         return self._call(text, **kwargs)
     
     def predict_messages(self, messages: List[BaseMessage], **kwargs) -> BaseMessage:
-        """Predict message completion"""
         result = self._generate(messages, **kwargs)
         return AIMessage(content=result.generations[0][0].text)
     
     def generate_prompt(self, prompts: List[str], **kwargs) -> LLMResult:
-        """Generate from prompts"""
         generations = []
         for prompt in prompts:
             response = self._call(prompt, **kwargs)
@@ -64,15 +57,12 @@ class HuaweiModelArtsLLM(LLM):
         return LLMResult(generations=generations)
     
     async def agenerate_prompt(self, prompts: List[str], **kwargs) -> LLMResult:
-        """Async generate from prompts"""
         return self.generate_prompt(prompts, **kwargs)
     
     async def apredict(self, text: str, **kwargs) -> str:
-        """Async predict text completion"""
         return self.predict(text, **kwargs)
     
     async def apredict_messages(self, messages: List[BaseMessage], **kwargs) -> BaseMessage:
-        """Async predict message completion"""
         return self.predict_messages(messages, **kwargs)
         
     def _call(
@@ -82,12 +72,9 @@ class HuaweiModelArtsLLM(LLM):
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> str:
-        """Make a call to Huawei Cloud ModelArts API"""
         
-        # Prepare messages
         messages = [{"role": "user", "content": prompt}]
         
-        # Prepare payload
         payload = {
             "model": self.model_name,
             "messages": messages,
@@ -95,14 +82,12 @@ class HuaweiModelArtsLLM(LLM):
             "max_tokens": self.max_tokens
         }
         
-        # Prepare headers
         headers = {
             "Content-Type": "application/json",
             "X-Auth-Token": self.api_key
         }
         
         try:
-            # Make API call
             response = requests.post(
                 self.base_url,
                 headers=headers,
@@ -111,7 +96,6 @@ class HuaweiModelArtsLLM(LLM):
             )
             response.raise_for_status()
             
-            # Parse response
             response_data = response.json()
             content = response_data['choices'][0]['message']['content']
             
@@ -127,9 +111,7 @@ class HuaweiModelArtsLLM(LLM):
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> LLMResult:
-        """Generate response from messages"""
         
-        # Convert messages to prompt
         prompt_parts = []
         for message in messages:
             if isinstance(message, HumanMessage):
@@ -141,10 +123,8 @@ class HuaweiModelArtsLLM(LLM):
         
         prompt = "\n".join(prompt_parts)
         
-        # Get response
         response_text = self._call(prompt, stop, run_manager, **kwargs)
         
-        # Create generation
         generation = Generation(text=response_text)
         
         return LLMResult(generations=[[generation]])
@@ -153,11 +133,11 @@ class HuaweiModelArtsLLM(LLM):
     def _llm_type(self) -> str:
         return "huawei_modelarts"
 
-# Create instance
+# Create instance using environment variables
 huawei_llm = HuaweiModelArtsLLM(
-    model_name="deepseek-r1-distil-qwen-32b_raziqt",
+    model_name=os.getenv("AI_DEEPSEEK_MODEL", os.getenv("AI_MODEL", "deepseek-r1-distil-qwen-32b_raziqt")),
     api_key=os.getenv("DEEPSEEK_API_KEY"),
-    base_url="https://pangu.ap-southeast1.myhuaweicloud.com/api/v2/chat/completions",  # Huawei Cloud ModelArts endpoint
+    base_url=os.getenv("AI_DEEPSEEK_BASE_URL", "https://pangu.ap-southeast1.myhuaweicloud.com/api/v2/chat/completions"),
     temperature=0.1,
     max_tokens=1024
 )

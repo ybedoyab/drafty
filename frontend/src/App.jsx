@@ -1,3 +1,4 @@
+// App: main layout with routing between landing and generation pages
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';

@@ -132,8 +132,10 @@ public
 tmp/
 temp/
 
-# Uploaded files (backend)
+# Uploaded files
 uploads/
+ai/generated_scad/
+imagen/
 
 # Generated DXF files
 *.dxf

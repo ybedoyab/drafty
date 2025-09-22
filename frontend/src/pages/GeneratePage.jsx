@@ -1,3 +1,4 @@
+// GeneratePage: handles image upload, calls backend, and displays generated OpenSCAD code
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import FileUpload from '../components/FileUpload';
@@ -17,7 +18,6 @@ export default function GeneratePage() {
   const [completedSteps, setCompletedSteps] = useState([]);
   const [backendStatus, setBackendStatus] = useState('checking');
 
-  // Check backend health on component mount
   useEffect(() => {
     const checkBackendHealth = async () => {
       try {
@@ -50,7 +50,6 @@ export default function GeneratePage() {
     setCompletedSteps([]);
     
     try {
-      // Simulate step progression
       setTimeout(() => setCurrentStep(2), 1000);
       setTimeout(() => setCurrentStep(3), 2000);
       setTimeout(() => setCurrentStep(4), 3000);
@@ -93,7 +92,6 @@ export default function GeneratePage() {
 
         <ErrorAlert message={error} onClose={() => setError('')} />
         
-        {/* Backend Status Indicator */}
         {backendStatus === 'unhealthy' && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
             <div className="flex items-center">
@@ -135,7 +133,6 @@ export default function GeneratePage() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Upload and Process */}
           <div className="lg:col-span-1 space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <FileUpload 
@@ -161,7 +158,6 @@ export default function GeneratePage() {
             />
           </div>
 
-          {/* Right Column - Results */}
           <div className="lg:col-span-2 space-y-6">
             {cadScript && (
               <CADScriptViewer cadScript={cadScript} />

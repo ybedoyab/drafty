@@ -1,18 +1,17 @@
+// CADViewer: lightweight 3D preview for very basic shapes parsed from script
 import React, { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Grid, Box, Cylinder, Sphere } from '@react-three/drei';
 import * as THREE from 'three';
+import { TEXT } from '../constants';
 
-// Simple geometry parser for basic shapes
 function parseCADScript(script) {
   const geometries = [];
   
-  // Basic parsing for common shapes (simplified for demo)
   const lines = script.toLowerCase().split('\n');
   
   lines.forEach(line => {
     if (line.includes('cube') || line.includes('box')) {
-      // Extract dimensions if available
       const sizeMatch = line.match(/(\d+(?:\.\d+)?)/g);
       const size = sizeMatch ? parseFloat(sizeMatch[0]) : 1;
       geometries.push({ type: 'box', size: [size, size, size] });
@@ -91,7 +90,6 @@ function CADGeometry({ geometries }) {
 export default function CADViewer({ cadScript, className = "" }) {
   const [geometries, setGeometries] = useState([]);
 
-  // Parse CAD script when it changes
   useEffect(() => {
     if (cadScript) {
       const parsed = parseCADScript(cadScript);
@@ -102,7 +100,7 @@ export default function CADViewer({ cadScript, className = "" }) {
   if (!cadScript || geometries.length === 0) {
     return (
       <div className={`bg-gray-100 rounded-lg p-8 text-center ${className}`}>
-        <p className="text-gray-500">No hay modelo CAD para mostrar</p>
+        <p className="text-gray-500">{TEXT.cadViewer.empty}</p>
       </div>
     );
   }

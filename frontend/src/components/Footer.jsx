@@ -1,3 +1,4 @@
+// Footer: site footer with project link
 import { TEXT } from '../constants';
 
 export default function Footer() {

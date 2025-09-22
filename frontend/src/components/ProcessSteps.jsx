@@ -1,3 +1,4 @@
+// ProcessSteps: displays current progress through the generation pipeline
 import { FaImage, FaEye, FaCog, FaCode } from 'react-icons/fa';
 import { TEXT } from '../constants';
 

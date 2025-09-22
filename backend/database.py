@@ -1,13 +1,12 @@
+"""Database client for MongoDB (Huawei Cloud DDS)."""
 import os
 import logging
 from typing import Optional, Dict, Any
 from datetime import datetime
 import uuid
 
-# Database configuration
-DB_TYPE = os.getenv("DATABASE_TYPE", "mongodb")  # Only MongoDB for Huawei Cloud DDS
+DB_TYPE = os.getenv("DATABASE_TYPE", "mongodb")
 
-# Configure logging
 log_level = os.getenv("BACKEND_LOG_LEVEL", "INFO").upper()
 logging.basicConfig(level=getattr(logging, log_level, logging.INFO))
 
@@ -22,14 +21,13 @@ if DB_TYPE == "mongodb":
             self.connect()
         
         def connect(self):
-            """Connect to MongoDB"""
+            """Connect to MongoDB."""
             try:
                 mongodb_uri = os.getenv("DATABASE_URI")
                 if not mongodb_uri:
                     raise ValueError("DATABASE_URI environment variable not set")
                 
                 self.client = MongoClient(mongodb_uri)
-                # Extract database name from URI or use environment variable
                 db_name = os.getenv("DATABASE_NAME", "test")
                 if "/" in mongodb_uri.split("?")[0]:
                     uri_parts = mongodb_uri.split("/")
@@ -38,11 +36,8 @@ if DB_TYPE == "mongodb":
                 
                 self.db = self.client[db_name]
                 
-                # Test connection
                 self.client.admin.command('ping')
                 logging.info(f"Connected to MongoDB successfully - Database: {db_name}")
-                
-                # Ensure collections exist
                 self._ensure_collections()
                 
             except ConnectionFailure as e:
@@ -53,35 +48,25 @@ if DB_TYPE == "mongodb":
                 raise
         
         def _ensure_collections(self):
-            """Ensure required collections exist with proper indexes"""
+            """Ensure required collections exist with proper indexes."""
             try:
-                # Create uploads collection if it doesn't exist
                 if "uploads" not in self.db.list_collection_names():
                     self.db.create_collection("uploads")
                     logging.info("Created 'uploads' collection")
-                
-                # Create indexes for better performance
                 uploads_collection = self.db.uploads
-                
-                # Index on created_at for sorting
                 uploads_collection.create_index("created_at")
-                
-                # Index on status for filtering
                 uploads_collection.create_index("status")
-                
-                # Index on filename for lookups
                 uploads_collection.create_index("filename")
                 
                 logging.info("Database collections and indexes verified")
                 
             except Exception as e:
                 logging.error(f"Error ensuring collections: {e}")
-                # Don't raise - this is not critical for basic functionality
         
         def save_upload_record(self, filename: str, original_filename: str, 
                             file_size: int, file_type: str, 
                             cad_script: str = None, description: str = None) -> str:
-            """Save upload record to database"""
+            """Save upload record to database."""
             try:
                 record_id = str(uuid.uuid4())
                 record = {
@@ -105,11 +90,10 @@ if DB_TYPE == "mongodb":
                 raise
         
         def get_upload_record(self, record_id: str) -> Optional[Dict[str, Any]]:
-            """Get upload record by ID"""
+            """Get upload record by ID."""
             try:
                 record = self.db.uploads.find_one({"_id": record_id})
                 if record:
-                    # Convert ObjectId to string for JSON serialization
                     record["_id"] = str(record["_id"])
                 return record
             except Exception as e:
@@ -117,7 +101,7 @@ if DB_TYPE == "mongodb":
                 return None
         
         def update_upload_record(self, record_id: str, updates: Dict[str, Any]) -> bool:
-            """Update upload record"""
+            """Update upload record."""
             try:
                 result = self.db.uploads.update_one(
                     {"_id": record_id},
@@ -129,7 +113,7 @@ if DB_TYPE == "mongodb":
                 return False
         
         def list_uploads(self, limit: int = 50, skip: int = 0) -> list:
-            """List recent uploads"""
+            """List recent uploads."""
             try:
                 cursor = self.db.uploads.find().sort("created_at", -1).skip(skip).limit(limit)
                 uploads = []
@@ -142,7 +126,7 @@ if DB_TYPE == "mongodb":
                 return []
         
         def delete_upload_record(self, record_id: str) -> bool:
-            """Delete upload record from database"""
+            """Delete upload record from database."""
             try:
                 result = self.db.uploads.delete_one({"_id": record_id})
                 return result.deleted_count > 0
@@ -151,9 +135,7 @@ if DB_TYPE == "mongodb":
                 return False
 
 else:
-    # Only MongoDB is supported for Huawei Cloud DDS
     logging.error("Only MongoDB is supported for Huawei Cloud DDS")
     raise ValueError("DB_TYPE must be 'mongodb' for Huawei Cloud deployment")
 
-# Initialize database instance
 db = Database()
