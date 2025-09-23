@@ -15,7 +15,7 @@ export default function GLTFViewer({ url, className = "", background = 0xf8fafc 
     if (!containerRef.current) return;
 
     const width = containerRef.current.clientWidth;
-    const height = 400;
+    const height = containerRef.current.clientHeight;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(background);
@@ -77,7 +77,7 @@ export default function GLTFViewer({ url, className = "", background = 0xf8fafc 
     const onResize = () => {
       if (!containerRef.current) return;
       const w = containerRef.current.clientWidth;
-      const h = 400;
+      const h = containerRef.current.clientHeight;
       renderer.setSize(w, h);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
@@ -111,7 +111,7 @@ export default function GLTFViewer({ url, className = "", background = 0xf8fafc 
   }, [url, background]);
 
   return (
-    <div ref={containerRef} className={`bg-white rounded-lg shadow-md p-2 ${className}`}></div>
+    <div ref={containerRef} className={`h-full w-full bg-white ${className}`}></div>
   );
 }
 

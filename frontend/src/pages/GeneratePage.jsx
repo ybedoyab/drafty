@@ -5,12 +5,15 @@ import FileUpload from '../components/FileUpload';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorAlert from '../components/ErrorAlert';
 import ProcessSteps from '../components/ProcessSteps';
+import ProcessTimeline from '../components/ProcessTimeline';
+import BackendStatus from '../components/BackendStatus';
 import CADScriptViewer from '../components/CADScriptViewer';
 import GLTFViewer from '../components/GLTFViewer';
 import { TEXT } from '../constants';
 
 export default function GeneratePage() {
   const [file, setFile] = useState(null);
+  const [selectedExample, setSelectedExample] = useState(null);
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [cadScript, setCadScript] = useState('');
@@ -19,6 +22,7 @@ export default function GeneratePage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [backendStatus, setBackendStatus] = useState('checking');
+  const [showCode, setShowCode] = useState(true);
 
   useEffect(() => {
     const checkBackendHealth = async () => {
@@ -38,10 +42,18 @@ export default function GeneratePage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file) return;
+    if (!file && !selectedExample) return;
     
     const formData = new FormData();
-    formData.append('file', file);
+    if (file) {
+      formData.append('file', file);
+    } else if (selectedExample) {
+      const response = await fetch(selectedExample.src);
+      const blob = await response.blob();
+      const exampleFile = new File([blob], `${selectedExample.id}.jpg`, { type: 'image/jpeg' });
+      formData.append('file', exampleFile);
+    }
+    
     if (description.trim()) {
       formData.append('description', description.trim());
     }
@@ -50,6 +62,7 @@ export default function GeneratePage() {
     setError('');
     setCurrentStep(1);
     setCompletedSteps([]);
+    setShowCode(true);
     
     try {
       setTimeout(() => setCurrentStep(2), 1000);
@@ -84,102 +97,119 @@ export default function GeneratePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 py-12 px-4">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold mb-2">{TEXT.generatePage.title}</h2>
-          <p className="text-gray-600">
-            {TEXT.generatePage.subtitle}
-          </p>
+    <div className="min-h-screen bg-slate-100">
+      <div className="h-screen flex flex-col">
+        <div className="py-4 px-6 border-b border-gray-200 bg-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">{TEXT.generatePage.title}</h2>
+              <p className="text-sm text-gray-600 mt-1">
+                {TEXT.generatePage.subtitle}
+              </p>
+            </div>
+            <div className="flex items-center space-x-6">
+              <BackendStatus status={backendStatus} />
+              {cadScript && (
+                <div className="flex items-center space-x-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={showCode}
+                        onChange={(e) => setShowCode(e.target.checked)}
+                        className="sr-only"
+                      />
+                      <div className={`w-5 h-5 rounded border-2 transition-all duration-200 ${
+                        showCode 
+                          ? 'bg-indigo-600 border-indigo-600' 
+                          : 'bg-white border-gray-300 hover:border-gray-400'
+                      }`}>
+                        {showCode && (
+                          <svg className="w-3 h-3 text-white absolute top-0.5 left-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                      {showCode ? TEXT.cadViewer.hideCode : TEXT.cadViewer.showCode}
+                    </span>
+                  </label>
+                </div>
+              )}
+              <ProcessTimeline 
+                currentStep={currentStep} 
+                completedSteps={completedSteps} 
+              />
+            </div>
+          </div>
         </div>
 
-        <ErrorAlert message={error} onClose={() => setError('')} />
-        
-        {backendStatus === 'unhealthy' && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">
-                  {TEXT.backendStatus.unhealthyTitle}
-                </h3>
-                <div className="mt-2 text-sm text-red-700">
-                  <p>{TEXT.backendStatus.unhealthyDesc}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {backendStatus === 'healthy' && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-green-800">
-                  {TEXT.backendStatus.healthyTitle}
-                </h3>
-                <div className="mt-2 text-sm text-green-700">
-                  <p>{TEXT.backendStatus.healthyDesc}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full flex">
+            <div className="w-1/3 border-r border-gray-200 bg-white overflow-y-auto">
+              <div className="p-4 space-y-4">
+                <ErrorAlert message={error} onClose={() => setError('')} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1 space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <FileUpload 
-                onFileSelect={setFile} 
-                selectedFile={file}
-                onDescriptionChange={setDescription}
-                description={description}
-              />
-              
-              <button
-                type="submit"
-                disabled={loading || !file}
-                className="w-full flex justify-center items-center gap-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {loading && <LoadingSpinner />}
-                {loading ? TEXT.generatePage.buttonLoading : TEXT.generatePage.buttonIdle}
-              </button>
-            </form>
-
-            <ProcessSteps 
-              currentStep={currentStep} 
-              completedSteps={completedSteps} 
-            />
-          </div>
-
-          <div className="lg:col-span-2 space-y-6">
-            {cadScript && (
-              <CADScriptViewer cadScript={cadScript} />
-            )}
-            {glbUrl && (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium text-gray-900">{TEXT.gltfViewer.title}</h3>
-                  <a
-                    href={glbUrl}
-                    download
-                    className="inline-flex items-center space-x-2 px-3 py-1 text-sm bg-indigo-600 text-white hover:bg-indigo-700 rounded-md transition-colors"
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <FileUpload 
+                    onFileSelect={setFile} 
+                    selectedFile={file}
+                    selectedExample={selectedExample}
+                    onExampleSelect={setSelectedExample}
+                    onDescriptionChange={setDescription}
+                    description={description}
+                  />
+                  
+                  <button
+                    type="submit"
+                    disabled={loading || (!file && !selectedExample)}
+                    className="w-full flex justify-center items-center gap-2 py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
                   >
-                    <span>{TEXT.gltfViewer.download}</span>
-                  </a>
-                </div>
-                <GLTFViewer url={glbUrl} />
+                    {loading && <LoadingSpinner />}
+                    {loading ? TEXT.generatePage.buttonLoading : TEXT.generatePage.buttonIdle}
+                  </button>
+                </form>
               </div>
-            )}
+            </div>
+
+            <div className="flex-1 overflow-hidden bg-gray-50">
+              <div className="h-full flex flex-col">
+                {cadScript && showCode && (
+                  <div className="flex-1 border-b border-gray-200">
+                    <CADScriptViewer cadScript={cadScript} />
+                  </div>
+                )}
+                {glbUrl && (
+                  <div className="flex-1">
+                    <div className="h-full flex flex-col">
+                      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
+                        <h3 className="text-lg font-medium text-gray-900">{TEXT.gltfViewer.title}</h3>
+                        <a
+                          href={glbUrl}
+                          download
+                          className="inline-flex items-center space-x-1 px-2 py-1 text-xs bg-indigo-600 text-white hover:bg-indigo-700 rounded transition-colors"
+                        >
+                          <span>{TEXT.gltfViewer.download}</span>
+                        </a>
+                      </div>
+                      <div className="flex-1">
+                        <GLTFViewer url={glbUrl} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {!cadScript && !glbUrl && (
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="text-center text-gray-500">
+                      <div className="text-6xl mb-4">🎯</div>
+                      <h3 className="text-xl font-medium mb-2">Ready to generate?</h3>
+                      <p>Upload an image or select an example to get started</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

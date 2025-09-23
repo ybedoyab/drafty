@@ -14,6 +14,30 @@ export const TEXT = {
     taglineSuffix: 'with the help of AI.',
     cta: 'Generate CAD',
     rocket: '🚀',
+    subtitle: 'AI-powered CAD generation from images',
+    processTitle: 'How it works',
+    processSteps: [
+      {
+        icon: '📸',
+        title: 'Upload Image',
+        description: 'Upload a 3D object image'
+      },
+      {
+        icon: '🤖',
+        title: 'AI Analysis',
+        description: 'AI analyzes and understands the geometry'
+      },
+      {
+        icon: '⚙️',
+        title: 'Generate OpenSCAD',
+        description: 'Creates parametric OpenSCAD code'
+      },
+      {
+        icon: '🎯',
+        title: '3D Visualization',
+        description: 'Converts to GLB and displays in 3D viewer'
+      }
+    ]
   },
   footer: {
     competition: 'Huawei Developer Competition 2025',
@@ -41,13 +65,18 @@ export const TEXT = {
     textareaPlaceholder: 'E.g., Ramp 1 meter high and 3 meters wide, with a 15-degree slope...',
     textareaHelp: 'Describe dimensions, materials, angles, or specific features of the object'
   },
+  examples: {
+    title: 'Try with examples',
+    subtitle: 'Or choose from our example images',
+    clearSelection: 'Clear selection'
+  },
   steps: {
     title: 'Process progress',
     items: [
       { id: 1, name: 'Upload image', description: '3D image uploaded' },
-      { id: 2, name: 'Analyze image', description: 'Automatic analysis' },
-      { id: 3, name: 'Generate CAD', description: 'Model generation' },
-      { id: 4, name: 'OpenSCAD code', description: 'CAD script generated' }
+      { id: 2, name: 'AI Analysis', description: 'Analyzing geometry' },
+      { id: 3, name: 'Generate OpenSCAD', description: 'Creating CAD code' },
+      { id: 4, name: 'Convert to GLB', description: 'Generating 3D model' }
     ]
   },
   cadViewer: {
@@ -55,7 +84,9 @@ export const TEXT = {
     title: 'Generated OpenSCAD Code',
     download: 'Download',
     copy: 'Copy',
-    copied: 'Copied!'
+    copied: 'Copied!',
+    showCode: 'Show OpenSCAD Code',
+    hideCode: 'Hide OpenSCAD Code'
   },
   resultCard: {
     successTitle: 'Plan generated successfully!',
