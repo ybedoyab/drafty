@@ -7,7 +7,7 @@ import GeneratePage from './pages/GeneratePage';
 
 export default function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-purple-100">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-1 flex flex-col">
         <Routes>

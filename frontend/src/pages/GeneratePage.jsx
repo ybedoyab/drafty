@@ -22,7 +22,7 @@ export default function GeneratePage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [backendStatus, setBackendStatus] = useState('checking');
-  const [showCode, setShowCode] = useState(true);
+  const [showCode, setShowCode] = useState(false);
 
   useEffect(() => {
     const checkBackendHealth = async () => {
@@ -62,7 +62,7 @@ export default function GeneratePage() {
     setError('');
     setCurrentStep(1);
     setCompletedSteps([]);
-    setShowCode(true);
+    setShowCode(false);
     
     try {
       setTimeout(() => setCurrentStep(2), 1000);
@@ -109,34 +109,6 @@ export default function GeneratePage() {
             </div>
             <div className="flex items-center space-x-6">
               <BackendStatus status={backendStatus} />
-              {cadScript && (
-                <div className="flex items-center space-x-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
-                  <label className="flex items-center space-x-2 cursor-pointer">
-                    <div className="relative">
-                      <input
-                        type="checkbox"
-                        checked={showCode}
-                        onChange={(e) => setShowCode(e.target.checked)}
-                        className="sr-only"
-                      />
-                      <div className={`w-5 h-5 rounded border-2 transition-all duration-200 ${
-                        showCode 
-                          ? 'bg-indigo-600 border-indigo-600' 
-                          : 'bg-white border-gray-300 hover:border-gray-400'
-                      }`}>
-                        {showCode && (
-                          <svg className="w-3 h-3 text-white absolute top-0.5 left-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-                    <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
-                      {showCode ? TEXT.cadViewer.hideCode : TEXT.cadViewer.showCode}
-                    </span>
-                  </label>
-                </div>
-              )}
               <ProcessTimeline 
                 currentStep={currentStep} 
                 completedSteps={completedSteps} 
@@ -166,8 +138,14 @@ export default function GeneratePage() {
                     disabled={loading || (!file && !selectedExample)}
                     className="w-full flex justify-center items-center gap-2 py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
                   >
-                    {loading && <LoadingSpinner />}
-                    {loading ? TEXT.generatePage.buttonLoading : TEXT.generatePage.buttonIdle}
+                    {loading ? (
+                      <>
+                        <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Processing image...</span>
+                      </>
+                    ) : (
+                      <span>{TEXT.generatePage.buttonIdle}</span>
+                    )}
                   </button>
                 </form>
               </div>
@@ -175,11 +153,7 @@ export default function GeneratePage() {
 
             <div className="flex-1 overflow-hidden bg-gray-50">
               <div className="h-full flex flex-col">
-                {cadScript && showCode && (
-                  <div className="flex-1 border-b border-gray-200">
-                    <CADScriptViewer cadScript={cadScript} />
-                  </div>
-                )}
+                {/* CAD Viewer (3D Model) - Always on top */}
                 {glbUrl && (
                   <div className="flex-1">
                     <div className="h-full flex flex-col">
@@ -199,13 +173,55 @@ export default function GeneratePage() {
                     </div>
                   </div>
                 )}
+
+                {/* OpenSCAD Code - Collapsible section below */}
+                {cadScript && (
+                  <div className="border-t border-gray-200 bg-white">
+                    <div
+                      className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                      onClick={() => setShowCode(!showCode)}
+                    >
+                      <h3 className="text-base font-medium text-gray-900">{TEXT.cadViewer.title}</h3>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-600">
+                          {showCode ? TEXT.cadViewer.hideCode : TEXT.cadViewer.showCode}
+                        </span>
+                        <svg
+                          className={`w-4 h-4 text-gray-600 transition-transform duration-200 ${
+                            showCode ? 'rotate-180' : ''
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                    {showCode && (
+                      <div className="border-t border-gray-100">
+                        <CADScriptViewer cadScript={cadScript} />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Empty state or Loading state */}
                 {!cadScript && !glbUrl && (
                   <div className="flex-1 flex items-center justify-center">
-                    <div className="text-center text-gray-500">
-                      <div className="text-6xl mb-4">🎯</div>
-                      <h3 className="text-xl font-medium mb-2">Ready to generate?</h3>
-                      <p>Upload an image or select an example to get started</p>
-                    </div>
+                    {loading ? (
+                      <div className="text-center text-gray-600">
+                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
+                        <h3 className="text-xl font-medium mb-2">Processing image...</h3>
+                        <p>AI is analyzing your image and generating the CAD model</p>
+                      </div>
+                    ) : (
+                      <div className="text-center text-gray-500">
+                        <div className="text-6xl mb-4">🎯</div>
+                        <h3 className="text-xl font-medium mb-2">Ready to generate?</h3>
+                        <p>Upload an image or select an example to get started</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
